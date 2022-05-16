@@ -1,7 +1,7 @@
-from rlcard.games.cego.utils import cards2value
+from rlcard.games.wizard.utils import cards2value
 
 
-class CegoJudger:
+class WizardJudger:
     ''' The class to judge the winner of a round and the points of each player
 
     instance attributes:
@@ -14,15 +14,9 @@ class CegoJudger:
     def receive_points(self, points, players, player_id, cards) -> list:
         new_points = cards2value(cards)
 
-        # if player is cego player, only he receives the reward
+        # only player who got the trick, only he receives the reward
         if players[player_id].is_single_player:
             points[player_id] += new_points
-
-        # if player is not cego player, all players but the cego player receive the reward
-        else:
-            for i in range(len(players)):
-                if not players[i].is_single_player:
-                    points[i] += new_points
 
         return points
 

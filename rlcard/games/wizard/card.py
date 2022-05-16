@@ -143,8 +143,8 @@ class WizardCard:
         ''' Compare the winner of a trick
 
         Parameters:
-            - target (CegoCard): The current winner of the trick
-            - compare_to_card (CegoCard): The card to compare to
+            - target (WizardCard): The current winner of the trick
+            - compare_to_card (WizardCard): The card to compare to
         '''
 
         if target.suit == compare_to_card.suit:
@@ -199,5 +199,5 @@ class WizardCard:
         WizardCard.info["trump_card_ranks"] = trump_card_ranks
 
 
-# setup for CegoCard class
+# setup for WizardCard class
 WizardCard.setup_sorted_suit_ranks()

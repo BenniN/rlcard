@@ -10,13 +10,13 @@ from rlcard.games.wizard.card import WizardCard as Card
 # Read required docs
 ROOT_PATH = rlcard.__path__[0]
 
-with open(os.path.join(ROOT_PATH, 'games/cego/jsondata/action_space.json'), 'r') as file:
+with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/action_space.json'), 'r') as file:
     ACTION_SPACE = json.load(file, object_pairs_hook=OrderedDict)
     ACTION_LIST = list(ACTION_SPACE.keys())
 
 
 def init_deck() -> list:
-    ''' initialize the cego deck'''
+    ''' initialize the wizard deck'''
 
     deck = []
     card_info = Card.info
@@ -92,10 +92,10 @@ def get_cards_played(tricks_played, current_trick) -> list:
     return card_idxs
 
 
-def set_cego_player_deck(player, blind_cards) -> None:
+def set_wizard_player_deck(player, blind_cards) -> None:
     """
     this function is a helper function for selecting
-    the cards from the blind deck for the cego player
+    the cards from the blind deck for the wizard player
 
     the selection process is rule based:
 
@@ -388,17 +388,17 @@ def encode_obs_game_info(state, obs, start_idx):
         obs[start_idx+8+start_player_idx] = 1
 
 
-def valid_cego(cego_player_cards) -> bool:
+def valid_wizard(wizard_player_cards) -> bool:
     ''' This function checks if it would be valid for the
-    for the cego player to play cego.
+     wizard player to play wizard.
 
     Parameters:
-        - cego_player_cards (list): the cards of the cego player
+        - wizard_player_cards (list): the cards of the wizard player
 
     Returns:
         - valid (bool): The base is that the player has
             at least 15 points on his hand.
     '''
 
-    value = cards2value(cego_player_cards)
+    value = cards2value(wizard_player_cards)
     return value >= 15
