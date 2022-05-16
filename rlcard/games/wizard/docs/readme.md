@@ -35,9 +35,9 @@ File: ./jsondata/action_space.json
 
 |            Key             |                          Description                           |                  Example                   |
 |:--------------------------:|:--------------------------------------------------------------:|:------------------------------------------:|
-|          **hand**          |     The cards, the player currently has on his hand: List      |       ['1-r', '13-y', 'n-1', 'w-4']        |
-|         **trick**          |             The cards currently in the trick: List             |       ['1-r', '13-y', 'n-1', 'w-4']        |
-| **predicted_trick_cards**  |             The cards who should get a trick: List             |       ['1-r', '13-y', 'n-1', 'w-4']        |
+|          **hand**          |     The cards, the player currently has on his hand: List      |     ['1-r', '13-y', 'n-1', 'w-4' ...]      |
+|         **trick**          |             The cards currently in the trick: List             |     ['1-r', '13-y', 'n-1', 'w-4' ...]      |
+| **predicted_trick_cards**  |             The cards who should get a trick: List             |     ['1-r', '13-y', 'n-1', 'w-4' ...]      |
 | **predicted_trick_amount** | The amount of tricks the player wants to score this round: int |                     3                      |
 |         **target**         |              The card that has to be served: str               |                   '5-g'                    |
 |      **winner_card**       |          The card that currently wins the trick: str           |                   'w-4'                    |
