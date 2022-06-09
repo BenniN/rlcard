@@ -122,9 +122,16 @@ Path: *rlcard/envs/cego.py*
 ### Configuration
 
 The Environment currently allows the following configurations:
-* **game_variant** (str): The setting currently allows 2 values, "standard" and "solo".
+* **game_variant** (str): The currently implemented variants.
+  * "standard" (Cego) with heuristic
+  * "solo"
+  * "bettel"
+  * "piccolo"
+  * "utlimo"
+  * ```diff ! TODO: Räuber Variant```
 * **game_judge_by_points** (int): 
   * *0* (default): The payoffs of the game will be judged by the points the players gets. 
   * *1*: The payoffs will be judged by weather the player wins or loses. If the player loses the payoff is **0**, if the player wins the payoff is **1**.
   * *2*: The payoffs will be judged by weather the player wins or loses. If the player loses the payoff is **-1**, if the player wins the payoff is **1**.
+* **game_activate_heuristic** (bool): take into account heuristic for the game variant if possible
 

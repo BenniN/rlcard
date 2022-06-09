@@ -135,3 +135,4 @@ class CegoRound:
         state['legal_actions'] = self.get_legal_actions(player)
         state['start_player'] = self.starting_player_idx
         return state
+

@@ -86,10 +86,10 @@ The current representation of the so called observation state is (6, 54) Tuple. 
 
 It may make sense to encode the information about the current trick differently. One possibility would be to encode each trick card in a different plane.
 
-1.  Trick Plane: First Trick Card
-2.  Trick Plane: Second Trick Card
-3.  Trick Plane: Third Trick Card
-4.  Trick Plane: Winning Trick Card
+1.  Trick Plane: Winning Trick Card
+2.  Trick Plane: First Trick Card
+3.  Trick Plane: Second Trick Card
+4.  Trick Plane: Third Trick Card
 
 In this case the temporal information of the trick is still kept. For the last card of the trick obviously there is no encoding needed, because until that state the trick is already played and a new trick has begone. The 4. Plane may also be skippable.
 
@@ -159,7 +159,7 @@ Through repeating this experiment with the implemented heuristic we indeed can s
 
 ### Training of models for particular players
 
-Another question relevant for the understanding of the environment could be if trained models for one player can be used and replaced for the 3 other players. For this question a model was trained
+Another question relevant for the understanding of the environment could be if trained models for one player can be used and replaced for the 3 other players. For this question a model was trained without the implemented heuristic.
 
 Notable Parameters:
 
@@ -172,6 +172,12 @@ Notable Parameters:
 - **num_episodes**: 400,000
 
 #### Results
+
+**Learning Trajectory**
+
+![DQN Trajectory](imgs/dqn.png)
+
+It can be seen that the trajectory of the training rewards is slightly up but heavily fluctuates.
 
 **Model as Player 0**
 
@@ -189,11 +195,63 @@ Again despite that the model has not been trained for this particular player, th
 
 This Phenomenon may be fourther analysed.
 
+### Training of Model with DMC
+
+For Testing a DMC Model for the game variant cego was trained with the parameters from this paper [@zha\_douzero\_2021](http://arxiv.org/abs/2106.06135). The implemented heuristic was used.
+
+**Learning Trajectory**
+
+![DMC Trajectory](imgs/dmc.png)
+
+This Figure shows that the Training Trajectory in the beginning of the training was in favor of the cego player, and after tick 2000 the Reward advantage shifts towards the other players.
+
+**Results against random players**
+
+Game Comparison Size: 10000
+State Encoding Style: Alternative 1
+
+*Player 0 Model against random agents*
+
+* Cego Player: 0.1066
+* Other Players: -0.1066
+
+*Player 1 Model against random agents*
+
+* Cego Player: **-0.1002**
+* Other Players: **0.1002**
+
+*Player 0 Model vs Player 1 model with random agents*
+
+* Cego Player: **0.0234**
+* Other Players: **-0.0234**
+
+*Player 0 Model vs Player 1 and Player 2 model with one random agent*
+
+* Cego Player: **-0.058**
+* Other Players: **0.058**
+
+*All Player Models against another*
+
+* Cego Player: **-0.132**
+* Other Players: **0.132**
+
+**Observation and Interpretation**
+
+The trained models have a clear advantage against random playing agents.
+
+When comparing the models against each other it can be sean that the cego player has a slight advantage against a normal player playing with random agents in its team.
+
+As soon as there are more than 2 models playing against the cego player model there is a clear advantage against the cego player.
+
+**Conclusion**
+
+The Result of DMC are very promising and with longer training even better results could be possible.
+
 ## Algorithm Evaluation
 
 While **DQN** and **NFSP** may need proper Hyper parameter-Tuning [@zha\_rlcard\_2020](http://arxiv.org/abs/1910.04376). DMC seems to get better over time [@zha\_douzero\_2021](http://arxiv.org/abs/2106.06135).
 
-First For **DQN** and **NFSP** it should be check, what impact the position of the player has. The first player is always the cego player. The other players are the opponents in counterclockwise play direction, relative to player 0, the cego player. The Players with indexes 1-3 are in the same team. 
+First For **DQN** and **NFSP** it should be check, what impact the position of the player has. The first player is always the cego player. The other players are the opponents in counterclockwise play direction, relative to player 0, the cego player. The Players with indexes 1-3 are in the same team.
 
 DMCTrainer class trains for all players.
 

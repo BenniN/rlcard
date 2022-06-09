@@ -21,7 +21,6 @@ class CegoPlayer:
         self.player_id: int = player_id
         self.is_single_player: bool = is_single_player
         self.hand: list = []
-        self.num_tricks= 0
         self.valued_cards: list = []  # the cards that the cego player has layed aside
 
     def get_player_id(self) -> int:

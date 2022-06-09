@@ -1,7 +1,8 @@
 import unittest
 
+import rlcard
 from rlcard.games.cego import Game
-from rlcard.games.cego.utils import cards2value
+from rlcard.games.cego.utils import cards2value, encode_observation_var1
 
 
 def check_if_all_cards_are_unique(players: list) -> bool:
@@ -50,7 +51,6 @@ class TestStartPayoffs(unittest.TestCase):
         ]
 
         self.assertEqual(game.points, expected_payoffs)
-
 
 if __name__ == '__main__':
     unittest.main()

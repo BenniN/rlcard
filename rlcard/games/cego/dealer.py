@@ -1,4 +1,4 @@
-from rlcard.games.cego.utils import init_deck, valid_cego, cards2list
+from rlcard.games.cego.utils import init_deck, valid_cego, valid_ultimo, valid_solo
 
 
 class CegoDealer:
@@ -16,6 +16,7 @@ class CegoDealer:
 
     heuristics = {
         "cego"
+        "ultimo"
     }
 
     num_blind_cards = 10
@@ -27,9 +28,14 @@ class CegoDealer:
         self.shuffle()
         if heuristic == "cego":
             while not valid_cego(self.deck[0:11]):
-                # print("cego player deck:", cards2list(self.deck[0:11]))
                 self.shuffle()
-            # print("valid")
+        elif heuristic == "ultimo":
+            while not valid_ultimo(self.deck[0:11]):
+                self.shuffle()
+        elif heuristic == "solo":
+            while not valid_solo(self.deck[0:11]):
+                self.shuffle()
+
 
     def shuffle(self) -> None:
         self.np_random.shuffle(self.deck)

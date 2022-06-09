@@ -2,29 +2,24 @@ from rlcard.games.cego import Game
 
 from rlcard.games.cego import Dealer
 from rlcard.games.cego import Player
-from rlcard.games.cego import JudgerStandard
+from rlcard.games.cego import JudgerBettel
 from rlcard.games.cego import Round
+from rlcard.games.cego import Game
 
 from typing import Any
 
 
-class CegoGameSolo(Game):
-    ''' This is the Solo Variant of Cego
+class CegoGameBettel(Game):
+    ''' This is the Bettel Variant of Cego
 
-    Other than in Cego, the Solo variant has the following changes:
-        - The Single player plays with his hand cards
-        - He won't have any knowledge of the blind cards
-        - He still will get the points of the blind cards
+    The Player who plays alone (player 0) is not allowed to win a trick.
     '''
 
     def init_game(self) -> tuple[dict, Any]:
         self.points = [0 for _ in range(self.num_players)]
 
         # Initialize a dealer that can deal cards
-        if self.activate_heuristic:
-            self.dealer = Dealer(self.np_random, 'solo')
-        else:
-            self.dealer = Dealer(self.np_random)
+        self.dealer = Dealer(self.np_random)
 
         # Initialize players to play the game
         self.players = [Player(i, self.np_random)
@@ -33,7 +28,7 @@ class CegoGameSolo(Game):
         # player 0 is the solo player
         self.players[0].is_single_player = True
 
-        self.judger = JudgerStandard(self.np_random)
+        self.judger = JudgerBettel(self.np_random)
 
         # deal cards to player
         for i in range(self.num_players):
@@ -42,18 +37,10 @@ class CegoGameSolo(Game):
         # deal blind cards
         self.blind_cards = self.dealer.deal_blinds()
 
-        # Cego player gets the points from the throw away cards
-        self.points = self.judger.update_points(
-            self.points,
-            self.players,
-            0,
-            self.blind_cards  # player get points from blind cards
-        )
-
         # Count the round. There are 4 rounds in each game.
         self.round_counter = 0
 
-        # cego player starts the game
+        # player who starts the game
         self.current_player = 0
 
         self.round = Round(self.np_random)
@@ -65,3 +52,8 @@ class CegoGameSolo(Game):
         self.trick_history = []
 
         return state, self.round.current_player_idx
+
+    def is_over(self) -> bool:
+        if self.points[0] > 0:
+            return True
+        return self.round_counter >= Game.num_rounds

@@ -1,39 +1,53 @@
 from rlcard.games.cego.utils import cards2value
+from abc import ABC
 
-
-class CegoJudger:
-    ''' The class to judge the winner of a round and the points of each player
+class CegoJudger(ABC):
+    ''' The abstract class to judge the winner of a round and the points of each player
 
     instance attributes:
         - np_random: numpy random state
+
+    methods to implement:
+        - judge_game_points
+        - judge_game_zero_to_one
+        - judge_game_minusone_to_one
     '''
 
     def __init__(self, np_random):
         self.np_random = np_random
 
-    def receive_points(self, points, players, player_id, cards) -> list:
-        new_points = cards2value(cards)
+    def update_points(self, points, players, winner_player_id, trick_cards) -> list:
+        ''' update the points of each player
+        
+        Args:
+            - points (list[int]): the current points of each player
+            - players (list[Player]): the players
+            - winner_player_id (int): the id of the winner player
+            - trick_cards (list[list[int]]): the cards in the current trick
 
-        # if player is cego player, only he receives the reward
-        if players[player_id].is_single_player:
-            points[player_id] += new_points
+        Returns:
+            - game points (list[int]): the new points of each player
+        '''
+        raise NotImplementedError
 
-        # if player is not cego player, all players but the cego player receive the reward
-        else:
-            for i in range(len(players)):
-                if not players[i].is_single_player:
-                    points[i] += new_points
+    def judge_game_zero_to_one(self, points) -> list:
+        ''' judge the game with zero to one reward
+        
+        Args:
+            - points (list[int]): the current points of each player
 
-        return points
+        Returns:
+            - game points (list[int]): the final game points of each player
+        '''
+        raise NotImplementedError
 
-    def judge_game(self, points) -> list:
-        if points[0] > points[1]:
-            return [1, 0, 0, 0]
-        else:
-            return [0, 1, 1, 1]
+    def judge_game_minusone_to_one(self, points) -> list:
+        ''' judge the game with minus one to one reward
+        
+        Args:
+            - points (list[int]): the current points of each player
 
-    def judge_game_var2(self, points) -> list:
-        if points[0] > points[1]:
-            return [1, -1, -1, -1]
-        else:
-            return [-1, 1, 1, 1]
+        Returns:
+            - game points (list[int]): the final game points of each player
+        '''
+        raise NotImplementedError

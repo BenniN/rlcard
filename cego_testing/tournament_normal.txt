@@ -1,0 +1,31 @@
+0 random -0.07743
+1 random 0.07743
+2 random 0.07743
+3 random 0.07743
+---------------------
+0 random -0.076712
+1 random 0.076712
+2 random 0.076712
+3 random 0.076712
+---------------------
+0 random -0.07748
+1 random 0.07748
+2 random 0.07748
+3 random 0.07748
+---------------------
+0 experiments/cego_dqn_result_player_0_long/model.pth -0.02202
+1 random 0.02202
+2 random 0.02202
+3 random 0.02202
+---------------------
+0 random -0.10226
+1 experiments/cego_dqn_result_player_0_long/model.pth 0.10226
+2 random 0.10226
+3 random 0.10226
+---------------------
+Results with heuristic
+---------------------
+0 random -0.044836
+1 random 0.044836
+2 random 0.044836
+3 random 0.044836
