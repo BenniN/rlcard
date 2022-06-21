@@ -30,6 +30,7 @@ class WizardCard:
             - black_cards_ranks (list): The ranking of black cards
             - red_cards_ranks (list): The ranking of red cards
             - trump_cards_ranks (list): The ranking of trump cards
+            - non_colour_card_ranks (list): The ranking of "Narren" and "Wizards"
 
     Instance Attributes:
         - suit (str): The suit of the card
@@ -37,10 +38,9 @@ class WizardCard:
     '''
 
     info = {
-        "suits": ["r", "g", "b", "y", "Narr" "Wizard"],
+        "suits": ["r", "g", "b", "y", "n", "w", "trump_color"],
         "ranks": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-                  "11", "12", "13", "n", "w",
-                  "r", "g", "b", "y"],
+                  "11", "12", "13"],
         "cards": [
             "1-r", "2-r", "3-r", "4-r", "5-r", "6-r", "7-r", "8-r", "9-r", "10-r", "11-r", "12-r", "13-r",
             "1-g", "2-g", "3-g", "4-g", "5-g", "6-g", "7-g", "8-g", "9-g", "10-g", "11-g", "12-g", "13-g",
@@ -59,8 +59,8 @@ class WizardCard:
         "non_colour_card_ranks": []
     }
 
-    def __init__(self, suit, rank):
-        ''' Initialize the class of CegoCard
+    def __init__(self, suit, rank, trump_color=""):
+        ''' Initialize the class of WizardCard
 
         Parameters:
             - suit (str): The suit of card
@@ -68,6 +68,7 @@ class WizardCard:
         '''
         self.suit = suit
         self.rank = rank
+        self.trump_color = trump_color
 
     ''' Comparison function for sorting cards 
         Start
@@ -116,25 +117,41 @@ class WizardCard:
             - card2 (WizardCard): The second card
         '''
 
-        if card1.suit == "trump" and card2.suit != "trump":
+        if card1.suit == "trump_color" and card2.suit != "trump_color":
             return 1
-        elif card1.suit != "trump" and card2.suit == "trump":
+        elif card1.suit != "trump_color" and card2.suit == "trump_color":
             return -1
-        elif card1.suit == "trump" and card2.suit == "trump":
+        elif card1.suit == "trump_color" and card2.suit == "trump_color":
             return WizardCard.info["trump_card_ranks"].index(card1.rank) - WizardCard.info["trump_card_ranks"].index(
                 card2.rank)
 
         idx_card1 = 0
-        if card1.suit == "d" or card1.suit == "h":
+        if card1.suit == "r":
             idx_card1 = WizardCard.info["red_card_ranks"].index(card1.rank)
-        else:
-            idx_card1 = WizardCard.info["black_cards_ranks"].index(card1.rank)
+        if card1.suit == "g":
+            idx_card1 = WizardCard.info["green_cards_ranks"].index(card1.rank)
+        if card1.suit == "b":
+            idx_card1 = WizardCard.info["blue_card_ranks"].index(card1.rank)
+        if card1.suit == "y":
+            idx_card1 = WizardCard.info["yellow_cards_ranks"].index(card1.rank)
+        if card1.suit == "n":
+            idx_card1 = WizardCard.info["non_colour_card_ranks"].index(card1.rank)
+        if card1.suit == "w":
+            idx_card1 = WizardCard.info["non_colour_card_ranks"].index(card1.rank)
 
         idx_card2 = 0
-        if card2.suit == "d" or card2.suit == "h":
+        if card2.suit == "r":
             idx_card2 = WizardCard.info["red_card_ranks"].index(card2.rank)
-        else:
-            idx_card2 = WizardCard.info["black_cards_ranks"].index(card2.rank)
+        if card2.suit == "g":
+            idx_card2 = WizardCard.info["green_cards_ranks"].index(card2.rank)
+        if card2.suit == "b":
+            idx_card2 = WizardCard.info["blue_card_ranks"].index(card2.rank)
+        if card2.suit == "y":
+            idx_card2 = WizardCard.info["yellow_cards_ranks"].index(card2.rank)
+        if card2.suit == "n":
+            idx_card2 = WizardCard.info["non_colour_card_ranks"].index(card2.rank)
+        if card2.suit == "w":
+            idx_card2 = WizardCard.info["non_colour_card_ranks"].index(card2.rank)
 
         return idx_card1 - idx_card2
 
@@ -148,7 +165,7 @@ class WizardCard:
         '''
 
         if target.suit == compare_to_card.suit:
-            if target.suit == "trump":
+            if target.suit == "trump_color":
                 return WizardCard.info["trump_card_ranks"].index(target.rank) - WizardCard.info[
                     "trump_card_ranks"].index(compare_to_card.rank)
             elif target.suit == "d" or target.suit == "h":

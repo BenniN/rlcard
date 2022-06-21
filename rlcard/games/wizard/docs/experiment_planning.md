@@ -72,13 +72,13 @@ The current representation of the so called observation state is (6, 54) Tuple. 
 
 ### A Description of each plane:
 
-| indexes | Description |
-| --- | --- |
-| 0-53 | The cards on the players hand |
-| 54-107 | The card that currently wins the trick |
-| 108-161 | All the cards within the current trick |
-| 162-215 | All the cards that haven't been played jet and may still be played by other players |
-| 216-227 | **This plane encodes other game specific information.**<br>**\[216-219\]**: The players within the same team have the value 1.<br>**\[220-223\]**: The player who would win the round is encoded.<br>**\[224-227\]**: The player who started the current trick round is encoded. |
+| indexes | Description                                                                                                                                                                                                                                                                      |
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0-59    | The cards on the players hand                                                                                                                                                                                                                                                    |
+| 60-119  | The card that currently wins the trick                                                                                                                                                                                                                                           |
+| 120-179 | All the cards within the current trick                                                                                                                                                                                                                                           |
+| 180-239 | All the cards that haven't been played jet and may still be played by other players                                                                                                                                                                                              |
+| 240-251  | **This plane encodes other game specific information.**<br>**\[240-243\]**: The players within the same team have the value 1.<br>**\[244-247\]**: The player who would win the round is encoded.<br>**\[248-251\]**: The player who started the current trick round is encoded. |
 
 ### Alternatives for Encoding:
 

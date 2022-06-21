@@ -1,4 +1,22 @@
 class WizardDealer:
+    ''' The class to deal the cards to the players
+
+     Class Attributes:
+         - num_player_cards: the number of cards each player gets
+         - num_round: the number of the current round
+         - heuristics: heuristics for specific game modes that can be used
+
+     Instance Attributes:
+         - np_random: numpy random state
+         - deck: the deck of cards
+     '''
+
+    heuristics = {
+
+    }
+    num_player_cards = 0
+    num_round = 0
+
     ''' Initialize a uno dealer class
     '''
     def __init__(self, np_random):
