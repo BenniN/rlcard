@@ -1,3 +1,4 @@
+import random
 from copy import deepcopy
 import numpy as np
 from typing import Any
@@ -7,10 +8,11 @@ from rlcard.games.wizard.utils import cards2list
 from rlcard.games.wizard import Dealer
 from rlcard.games.wizard import Judger
 from rlcard.games.wizard import Round
+from rlcard.games.wizard import Player
 
 
-class WizardGame(ABC):
-    ''' The abstract class for a wizard game
+class WizardGame():
+    ''' The class for a wizard game
 
     class attributes:
         - num_rounds: the number of rounds in a game
@@ -35,13 +37,14 @@ class WizardGame(ABC):
     num_rounds: int = 15
     num_actions: int = 60
 
-    def __init__(self, allow_step_back=False, activate_heuristic=False):
+    def __init__(self, allow_step_back=False):
+
         self.allow_step_back: bool = allow_step_back
         self.np_random: np.random.RandomState = np.random.RandomState()
         self.num_players: int = 4  # there could be 3 to 6 players
         self.points: list[int] = [0 for _ in range(self.num_players)]
+        self.num_rounds = self.num_actions / self.num_players
 
-        self.activate_heuristic: bool = activate_heuristic
         self.dealer: Dealer = None
         self.players: list = None
         self.judger: Judger = None
@@ -49,8 +52,9 @@ class WizardGame(ABC):
         self.round_counter: int = None
         self.history: list = None
         self.trick_history: list = None
-        self.blind_cards: list = None
         self.last_round_winner_idx: int = None
+        self.forcast_player_amount: int = None
+        self.forcast_predicted_cards: int = None
         self.judge_by_points: int = 0
 
     def configure(self, game_config) -> None:
@@ -59,7 +63,37 @@ class WizardGame(ABC):
         self.num_players = game_config['game_num_players']
 
     def init_game(self) -> tuple[dict, Any]:
-        raise NotImplementedError
+        self.points = [0 for _ in range(self.num_players)]
+
+        # Initialize a dealer that can deal cards
+
+        self.dealer = Dealer(self.np_random)
+
+        # Initialize players to play the game
+        self.players = [Player(i, self.np_random)
+                        for i in range(self.num_players)]
+
+        self.judger = Judger(self.np_random)
+
+        # Count the round. There are 10 to 20 rounds in each game.
+        self.round_counter = 1
+
+        # deal cards to player
+        for i in range(self.num_players):
+            self.dealer.deal_cards(self.players[i], self.round_counter)
+
+        # player starts the game
+        self.current_player = random.randint(0, self.num_players)
+
+        self.round = Round(self.np_random)
+        self.round.start_new_round(0)
+
+        state = None #self.get_state(self.current_player)
+
+        self.history = []
+        self.trick_history = []
+
+        return state, self.round.current_player_idx
 
     def get_state(self, player_id) -> dict:
         ''' get current state of the game

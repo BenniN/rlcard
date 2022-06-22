@@ -13,6 +13,8 @@ def map_suit_to_color(suit) -> str:
         "g": "green",
         "b": "blue",
         "y": "yellow",
+        "n": "white",
+        "w": "white"
     }
     return switcher.get(suit, "Invalid suit")
 
@@ -31,7 +33,7 @@ class WizardCard:
             - yellow_cards_ranks (list): The ranking of yellow cards
             - non_colour_card_ranks (list): The ranking of "Narren" and "Wizards"
             - narr_cards_ranks (list): The ranking of Narren
-            -wizard_cards_ranks (list): The ranking of Wizards
+            - wizard_cards_ranks (list): The ranking of Wizards
 
     Instance Attributes:
         - suit (str): The suit of the card

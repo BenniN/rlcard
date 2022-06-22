@@ -1,4 +1,4 @@
-from rlcard.games.cego.utils import init_deck
+from rlcard.games.wizard.utils import init_deck
 
 
 class WizardDealer:
@@ -17,8 +17,8 @@ class WizardDealer:
     heuristics = {
 
     }
-    num_player_cards = 0
-    num_round = 0
+    num_player_cards = 10
+    num_round = 10
 
     ''' Initialize a uno dealer class
     '''

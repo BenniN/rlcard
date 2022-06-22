@@ -4,7 +4,7 @@ from collections import OrderedDict
 import rlcard
 from rlcard.envs import Env
 from rlcard.games.wizard.utils import ACTION_LIST, ACTION_SPACE
-from rlcard.games.wizard.utils import cards2list, encode_observation_var1, encode_observation_perfect_information
+from rlcard.games.wizard.utils import cards2list, encode_observation_var0, encode_observation_perfect_information
 
 DEFAULT_GAME_CONFIG = {
     'game_num_players': 4,
@@ -16,15 +16,8 @@ DEFAULT_GAME_CONFIG = {
 }
 
 
-def map_to_Game(variant_name):
-    switcher: dict = {
-    }
-
-    return switcher.get(variant_name, "Invalid variant name")
-
-
-class CegoEnv(Env):
-    ''' Cego Environment
+class WizardEnv(Env):
+    ''' Wizard Environment
 
     Instance Attributes:
         - name (str): the name of the game
@@ -37,7 +30,7 @@ class CegoEnv(Env):
     def __init__(self, config):
         ''' Initialize the Cego environment
         '''
-        self.name = 'cego'
+        self.name = 'wizard'
         self.default_game_config = DEFAULT_GAME_CONFIG
 
         # select the proper game variant
