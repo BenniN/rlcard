@@ -9,25 +9,23 @@ import random
 
 import rlcard
 
-from rlcard.games.cego.card import CegoCard as Card
+from rlcard.games.wizard.card import WizardCard as Card
 
 # Read required docs
 ROOT_PATH = rlcard.__path__[0]
 
-with open(os.path.join(ROOT_PATH, 'games/cego/jsondata/action_space.json'), 'r') as file:
+with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/action_space.json'), 'r') as file:
     ACTION_SPACE = json.load(file, object_pairs_hook=OrderedDict)
     ACTION_LIST = list(ACTION_SPACE.keys())
 
 
 def init_deck() -> list:
-    ''' initialize the cego deck'''
+    ''' initialize the wizard deck'''
 
     deck = []
     card_info = Card.info
 
     for card in card_info["cards"]:
-        rank, suit = card.split('-')
-        deck.append(Card(suit, rank))
 
     return deck
 
@@ -96,10 +94,10 @@ def get_cards_played(tricks_played, current_trick) -> list:
     return card_idxs
 
 
-def set_cego_player_deck(player, blind_cards) -> None:
+def set_wizard_player_deck(player, blind_cards) -> None:
     """
     this function is a helper function for selecting
-    the cards from the blind deck for the cego player
+    the cards from the blind deck for the wizard player
 
     the selection process is rule based:
 
@@ -263,7 +261,7 @@ def encode_observation_var2(state, is_raeuber=False):
 
     obs[range(54, 107)] = 1
     # unset all cards that are out of the game
-    obs[known_cards_idxs] = 0
+    #obs[known_cards_idxs] = 0
 
     known_cards_idxs = get_known_cards(
         state['hand'], state['valued_cards'], state['played_tricks'], state['trick'], 54)
@@ -312,7 +310,7 @@ def encode_observation_var3(state, is_raeuber=False):
 
     obs[range(54, 107)] = 1
     # unset all cards that are out of the game
-    obs[known_cards_idxs] = 0
+    #obs[known_cards_idxs] = 0
 
     known_cards_idxs = get_known_cards(
         state['hand'], state['valued_cards'], state['played_tricks'], state['trick'], 54)
@@ -441,24 +439,6 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber=False):
     if start_player_idx != None:
         obs[start_idx+8+start_player_idx] = 1
 
-
-def valid_cego(cego_player_cards) -> bool:
-    ''' This function checks if it would be valid for the
-    for the cego player to play cego.
-
-    Parameters:
-        - cego_player_cards (list): the cards of the cego player
-
-    Returns:
-        - valid (bool): The base is that the player has
-            at least 15 points on his hand.
-            - http://cegofreunde.jimdofree.com/taktik-und-tipps/
-    '''
-
-    value = cards2value(cego_player_cards)
-    return value >= 15
-
-
 def save_args_params(args):
     if not os.path.exists(args["log_dir"]):
         os.makedirs(args["log_dir"])
@@ -468,26 +448,26 @@ def save_args_params(args):
             f.write("{}: {}\n".format(key, value))
 
 
-def create_cego_dmc_graph(model_path):
+def create_wizard_dmc_graph(model_path):
     file = open(model_path + '/dmc/logs.csv')
 
     csvreader = csv.DictReader(file)
 
     y = []
-    x_cego = []
+    x_wizard = []
     x_other = []
     tick = 0
 
     for row in csvreader:
         if isfloat(row['mean_episode_return_1']):
-            x_cego.append(float(row['mean_episode_return_0']))
+            x_wizard.append(float(row['mean_episode_return_0']))
             y.append(tick)
             tick += 1
         if isfloat(row['mean_episode_return_1']):
             x_other.append(float(row['mean_episode_return_1']))
 
     fig, ax = plt.subplots()
-    ax.plot(y, x_cego, label='Cego Player')
+    ax.plot(y, x_wizard, label='Wizard Player')
     ax.plot(y, x_other, label='Other Players')
     ax.set(xlabel='Tick', ylabel='reward')
     ax.legend()
@@ -534,42 +514,5 @@ def load_model(model_path, env=None, position=None, device=None):
     return agent
 
 
-def valid_ultimo(cego_player_cards) -> bool:
-    ''' This function checks if it is possible
-    for the ultimo player to play ultimo.
-
-    Parameters:
-        - cego_player_cards (list): the cards of the cego player
-
-    Returns:
-        - valid (bool): Player has 1-trump on his hand
-    '''
-
-    return "1-trump" in cards2list(cego_player_cards)
 
 
-def valid_solo(cego_player_cards) -> bool:
-    ''' This function checks if it would be valid for the
-    for the solo player to play solo.
-
-    Parameters:
-        - cego_player_cards (list): the cards of the cego player
-
-    Returns:
-        - valid (bool): if player has 7 trumps, two trumps >= 17 and 2 colors
-            or 8 trumps
-            - https://www.cego-online.de/tl_files/documents/CegoSpielregelndef1301224mit%20Anhang.pdf
-    '''
-
-    trumps = [card for card in cego_player_cards if card.suit == 'trump']
-    trumps_higher_17 = [card for card in trumps if card.suit == 'trump'
-                        and (card.rank == 'gstiess' or int(card.rank) >= 17)]
-    colors = set(
-        [card.suit for card in cego_player_cards if card.suit != 'trump'])
-
-    if len(trumps) >= 8:
-        return True
-    elif len(trumps) == 7 and len(trumps_higher_17) and len(colors) == 2:
-        return True
-
-    return False

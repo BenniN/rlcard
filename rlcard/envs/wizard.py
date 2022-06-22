@@ -3,7 +3,6 @@ from collections import OrderedDict
 
 import rlcard
 from rlcard.envs import Env
-from rlcard.games.wizard import
 from rlcard.games.wizard.utils import ACTION_LIST, ACTION_SPACE
 from rlcard.games.wizard.utils import cards2list, encode_observation_var1, encode_observation_perfect_information
 
@@ -19,12 +18,6 @@ DEFAULT_GAME_CONFIG = {
 
 def map_to_Game(variant_name):
     switcher: dict = {
-        'standard': GameStandard,
-        'solo': GameSolo,
-        'bettel': GameBettel,
-        'piccolo': GamePiccolo,
-        'ultimo': GameUltimo
-        # TODD: Raeuber
     }
 
     return switcher.get(variant_name, "Invalid variant name")

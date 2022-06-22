@@ -25,12 +25,13 @@ class WizardCard:
             - suits (list): possible suits for a card
             - ranks (list): possible ranks for a card
             - cards (list): A list of all the cards
-            - color_card_values (dict): The value mapping for color cards
-            - trump_card_values (dict): The value mapping for trump cards
-            - black_cards_ranks (list): The ranking of black cards
             - red_cards_ranks (list): The ranking of red cards
-            - trump_cards_ranks (list): The ranking of trump cards
+            - green_cards_ranks (list): The ranking of green cards
+            - blue_cards_ranks (list): The ranking of blue cards
+            - yellow_cards_ranks (list): The ranking of yellow cards
             - non_colour_card_ranks (list): The ranking of "Narren" and "Wizards"
+            - narr_cards_ranks (list): The ranking of Narren
+            -wizard_cards_ranks (list): The ranking of Wizards
 
     Instance Attributes:
         - suit (str): The suit of the card
@@ -39,8 +40,8 @@ class WizardCard:
 
     info = {
         "suits": ["r", "g", "b", "y", "n", "w", "trump_color"],
-        "ranks": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-                  "11", "12", "13"],
+        "ranks": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+                  "11", "12", "13", "14"],
         "cards": [
             "1-r", "2-r", "3-r", "4-r", "5-r", "6-r", "7-r", "8-r", "9-r", "10-r", "11-r", "12-r", "13-r",
             "1-g", "2-g", "3-g", "4-g", "5-g", "6-g", "7-g", "8-g", "9-g", "10-g", "11-g", "12-g", "13-g",
@@ -56,10 +57,12 @@ class WizardCard:
         "green_cards_ranks": [],
         "blue_cards_ranks": [],
         "yellow_cards_ranks": [],
-        "non_colour_card_ranks": []
+        "non_colour_card_ranks": [],
+        "narr_card_ranks": [],
+        "wizard_card_ranks": [],
     }
 
-    def __init__(self, suit, rank, trump_color=""):
+    def __init__(self, suit, rank, trump_colour=""):
         ''' Initialize the class of WizardCard
 
         Parameters:
@@ -68,7 +71,7 @@ class WizardCard:
         '''
         self.suit = suit
         self.rank = rank
-        self.trump_color = trump_color
+        self.trump_colour = trump_colour
 
     ''' Comparison function for sorting cards 
         Start
@@ -96,13 +99,13 @@ class WizardCard:
         return WizardCard.compare_card_rank(self, other) != 0
 
     def get_value(self) -> float:
-        if self.rank in WizardCard.info["color_card_values"]:
-            return WizardCard.info["color_card_values"][self.rank]
+        if self.rank in WizardCard.info["ranks"]:
+            return WizardCard.info["ranks"][self.rank]
 
-        if self.suit == "trump" and self.rank in WizardCard.info["trump_card_values"]:
-            return WizardCard.info["trump_card_values"][self.rank]
+        if self.rank in WizardCard.info["non_colour_card_ranks"]:
+            return WizardCard.info["non_colour_card_ranks"][self.rank]
 
-        return 0.5
+        return 13
 
     ''' Comparison function for sorting cards 
         End
@@ -116,13 +119,29 @@ class WizardCard:
             - card1 (WizardCard): The first card
             - card2 (WizardCard): The second card
         '''
-
-        if card1.suit == "trump_color" and card2.suit != "trump_color":
+        if card1.suit == "w" and card2.suit != "w":
             return 1
-        elif card1.suit != "trump_color" and card2.suit == "trump_color":
+        if card1.suit != "w" and card2.suit == "w":
             return -1
-        elif card1.suit == "trump_color" and card2.suit == "trump_color":
+        if card1.suit == "n" and card2.suit != "n":
+            return -1
+        if card1.suit != "n" and card2.suit == "n":
+            return 1
+        if card1.suit == "n" and card2.suit == "n":
+            pass
+        if card1.suit == "w" and card2.suit == "w":
+            # first wizard wins so card1.
+            return 1
+
+        if card1.suit == "trump_colour" and card2.suit != "trump_colour":
+            return 1
+        elif card1.suit != "trump_colour" and card2.suit == "trump_colour":
+            return -1
+        elif card1.suit == "trump_colour" and card2.suit == "trump_colour":
             return WizardCard.info["trump_card_ranks"].index(card1.rank) - WizardCard.info["trump_card_ranks"].index(
+                card2.rank)
+        elif card1.suit != "trump_colour" and card2.suit != "trump_colour":
+            return WizardCard.info["colour_ranks"].index(card1.rank) - WizardCard.info["colour_ranks"].index(
                 card2.rank)
 
         idx_card1 = 0
@@ -156,38 +175,25 @@ class WizardCard:
         return idx_card1 - idx_card2
 
     @staticmethod
-    def compare_trick_winner(target, compare_to_card) -> int:
+    def compare_trick_winner(target, compare_to_card, trump_colour="") -> int:
         ''' Compare the winner of a trick
 
         Parameters:
             - target (WizardCard): The current winner of the trick
             - compare_to_card (WizardCard): The card to compare to
         '''
-
-        if target.suit == compare_to_card.suit:
-            if target.suit == "trump_color":
-                return WizardCard.info["trump_card_ranks"].index(target.rank) - WizardCard.info[
-                    "trump_card_ranks"].index(compare_to_card.rank)
-            elif target.suit == "d" or target.suit == "h":
-                return WizardCard.info["red_card_ranks"].index(target.rank) - WizardCard.info["red_card_ranks"].index(
-                    compare_to_card.rank)
-            else:
-                return WizardCard.info["black_cards_ranks"].index(target.rank) - WizardCard.info[
-                    "black_cards_ranks"].index(compare_to_card.rank)
-        elif compare_to_card.suit == "trump":
-            return -1
-        else:
-            return 1
+        trump_colour = trump_colour
 
     @staticmethod
-    def split_ranks() -> tuple[list, list, list]:
-        black_cards_ranks = WizardCard.info["ranks"][6:10] + \
-                            WizardCard.info["ranks"][22:]
-        red_card_ranks = WizardCard.info["ranks"][0:4][::-1] + \
-                         WizardCard.info["ranks"][22:]
-        trump_card_ranks = WizardCard.info["ranks"][:22]
+    def split_ranks() -> tuple[list, list, list, list, list, list]:
+        red_card_ranks = WizardCard.info["ranks"][1:13]
+        green_card_ranks = WizardCard.info["ranks"][1:13]
+        blue_card_ranks = WizardCard.info["ranks"][1:13]
+        yellow_card_ranks = WizardCard.info["ranks"][1:13]
+        narr_card_ranks = WizardCard.info["ranks"][0]
+        wizard_card_ranks = WizardCard.info["ranks"][14]
 
-        return black_cards_ranks, red_card_ranks, trump_card_ranks
+        return red_card_ranks, green_card_ranks, blue_card_ranks, yellow_card_ranks, narr_card_ranks, wizard_card_ranks
 
     @staticmethod
     def print_cards(cards) -> None:
@@ -201,19 +207,21 @@ class WizardCard:
         for i, card in enumerate(cards):
             rank, suit = card.split('-')
 
-            print(colored(rank + "-" + map_suit_to_symbol(suit),
-                          map_suit_to_color(suit)), end="")
+            print(colored(rank + "-" + suit)),
 
             if i < len(cards) - 1:
                 print(', ', end='')
 
     @staticmethod
     def setup_sorted_suit_ranks() -> None:
-        black_cards_ranks, red_card_ranks, trump_card_ranks = WizardCard.split_ranks()
+        red_card_ranks, green_card_ranks, blue_card_ranks, yellow_card_ranks, narr_card_ranks, wizard_card_ranks = WizardCard.split_ranks()
 
-        WizardCard.info["black_cards_ranks"] = black_cards_ranks
         WizardCard.info["red_card_ranks"] = red_card_ranks
-        WizardCard.info["trump_card_ranks"] = trump_card_ranks
+        WizardCard.info["green_card_ranks"] = green_card_ranks
+        WizardCard.info["blue_card_ranks"] = blue_card_ranks
+        WizardCard.info["yellow_card_ranks"] = yellow_card_ranks
+        WizardCard.info["narr_card_ranks"] = narr_card_ranks
+        WizardCard.info["wizard_card_ranks"] = wizard_card_ranks
 
 
 # setup for WizardCard class
