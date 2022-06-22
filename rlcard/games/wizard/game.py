@@ -32,13 +32,13 @@ class WizardGame(ABC):
         - last_round_winner_idx (int): the last round winner
     '''
 
-    num_rounds: int = 11
-    num_actions: int = 54
+    num_rounds: int = 15
+    num_actions: int = 60
 
     def __init__(self, allow_step_back=False, activate_heuristic=False):
         self.allow_step_back: bool = allow_step_back
         self.np_random: np.random.RandomState = np.random.RandomState()
-        self.num_players: int = 4  # there are always 4 players in this game
+        self.num_players: int = 4  # there could be 3 to 6 players
         self.points: list[int] = [0 for _ in range(self.num_players)]
 
         self.activate_heuristic: bool = activate_heuristic
@@ -57,7 +57,6 @@ class WizardGame(ABC):
         ''' Specify some game specific parameters, such as number of players '''
 
         self.num_players = game_config['game_num_players']
-        self.activate_heuristic = game_config['game_activate_heuristic']
 
     def init_game(self) -> tuple[dict, Any]:
         raise NotImplementedError

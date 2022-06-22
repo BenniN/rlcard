@@ -1,3 +1,6 @@
+from rlcard.games.cego.utils import init_deck
+
+
 class WizardDealer:
     ''' The class to deal the cards to the players
 
