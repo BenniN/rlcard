@@ -64,18 +64,19 @@ def get_tricks_played(tricks) -> list:
     return card_idxs
 
 
-def get_known_cards(hand, valued_cards, tricks_played, current_trick, start_idx=0) -> list:
+def get_known_cards(hand, top_card, tricks_played, current_trick, start_idx=0) -> list:
     ''' get all cards that are already out of the game '''
 
     known_cards = []
     if hand is not None:
         known_cards.extend(hand)
-    if valued_cards is not None:
-        known_cards.extend(valued_cards)
+    if top_card is not None:
+        known_cards.append(top_card)
     if tricks_played is not None:
         known_cards.extend([card for trick in tricks_played for card in trick])
     if current_trick is not None:
         known_cards.extend(current_trick)
+    print(known_cards)
     card_idxs = [start_idx + ACTION_SPACE[card] for card in known_cards]
     return card_idxs
 
@@ -139,7 +140,7 @@ def set_observation(obs, plane, indexes):
         obs[plane][index] = 1
 
 
-def encode_observation_var0(state):
+def encode_observation_var0(state, num_players=4):
     ''' the shape of this encoding is (336)
 
     Parameters:
@@ -150,19 +151,56 @@ def encode_observation_var0(state):
 
     Observation Representation
         - [0-59] own cards
-        - [60-119] predicted trick winning cards
-        - [120-179] cards playable by other players
-        - [180-239] winner of trick
-        - [240-299] cards in trick
-        - [300-?] Game Information
-            [300-?] Player who started round
-            [306-?] Card played position for trick
-            [312-?] player who wins current round
+        - [60-119] top card
+        - [120-179] target card
+        - [180-239] cards playable by other players
+        - [240-299] winner of trick
+        - [300-359] cards in trick
+        - [360-383] Game Information
+            [360-365] Player who started round
+            [366-371] Card played position for trick
+            [372-377] player who wins current round
+            [378-383] color
         '''
 
-    obs = np.zeros((318), dtype=int)
+    obs = np.zeros((384), dtype=int)
+
+    hand_cards_idx = [ACTION_SPACE[card] for card in state['hand']]
+    obs[hand_cards_idx] = 1
+
+    top_card_id = None
+    if state['top_card'] != 'None':
+        top_card_id = 60 + ACTION_SPACE[state['top_card']]
+        obs[top_card_id] = 1
+
+    target_card_id = None
+    if state['target_card'] != 'None':
+        target_card_id = 120 + ACTION_SPACE[state['target_card']]
+        obs[target_card_id] = 1
+
+    known_card_ids = get_known_cards(
+        state['hand'], state['top_card'], state['tricks_played'], state['current_trick'], 180)
+    obs[range(180, 240)] = 1
+    obs[known_card_ids] = 0
+
+    winner_card_id = None
+    if state['winner_card'] != 'None':
+        winner_card_id = 240 + ACTION_SPACE[state['winner_card']]
+        obs[winner_card_id] = 1
+
+    current_trick_card_ids = [300 + ACTION_SPACE[card]
+                              for card in state['current_trick']]
+    obs[current_trick_card_ids] = 1
+
+    encode_obs_game_info(state, obs, 360)
+
+    print("hand_cards_idx", hand_cards_idx)
+    print(state['top_card'], top_card_id)
+    print(state['target_card'], target_card_id)
+    print(obs)
 
     return obs
+
 
 def encode_observation_perfect_information(state, is_raeuber=False):
     ''' the shape of this encoding is (498)
@@ -187,25 +225,47 @@ def encode_observation_perfect_information(state, is_raeuber=False):
     '''
     obs = np.zeros((1000), dtype=int)
 
-
     return obs
+
+
+def map_color_to_index(color) -> str:
+    ''' Map the suit to a color
+
+    Parameters:
+        - suit: the suit of the card
+    '''
+
+    switcher = {
+        "r": 0,
+        "g": 1,
+        "b": 2,
+        "y": 3,
+        "n": 4,
+        "w": 5
+    }
+    return switcher.get(color, "Invalid suit")
 
 
 def encode_obs_game_info(state, obs, start_idx):
     winner_idx = state['winner']
     start_player_idx = state['start_player']
     current_player_idx = state['current_player']
+    round_color = map_color_to_index(state['round_color'])
 
-    if current_player_idx == 0:
-            obs[start_idx] = 1
-    else:
-            obs[[start_idx+1, start_idx+2, start_idx+3]] = 1
+    obs[start_idx + start_player_idx] = 1
 
     if winner_idx != None:
-        obs[start_idx+4 + winner_idx] = 1
+        obs[start_idx + winner_idx] = 1
+
+    if current_player_idx != None:
+        obs[start_idx + 6 + current_player_idx] = 1
 
     if start_player_idx != None:
-        obs[start_idx+8+start_player_idx] = 1
+        obs[start_idx+12+start_player_idx] = 1
+
+    if round_color != None:
+        obs[start_idx+18+round_color] = 1
+
 
 def save_args_params(args):
     if not os.path.exists(args["log_dir"]):
@@ -282,5 +342,45 @@ def load_model(model_path, env=None, position=None, device=None):
     return agent
 
 
+def compare_trick_winner(winner_card, compare_to_card, top_card=None) -> int:
+    ''' Compare the winner of a trick
 
+    Parameters:
+        - target (WizardCard): The current winner of the trick
+        - compare_to_card (WizardCard): The card to compare to
+    '''
+    trump_color = None
+    ignore_trump_color = False
 
+    if top_card == None:
+        ignore_trump_color = True
+
+    else:
+        trump_color = top_card.suit
+        if trump_color == "n":
+            ignore_trump_color = True
+
+        colors = ['r', 'g', 'b', 'y']
+
+        if trump_color == "w":
+            trump_color = colors[random.randint(0, 3)]  # select random color
+
+    if not ignore_trump_color and winner_card.suit != trump_color and compare_to_card.suit == trump_color:
+        return -1
+    if not ignore_trump_color and winner_card.suit == trump_color and compare_to_card.suit != trump_color:
+        return 1
+    if not ignore_trump_color and winner_card.suit == trump_color and compare_to_card.suit == trump_color:
+        return int(winner_card.rank) - int(compare_to_card.rank)
+    if winner_card.suit != trump_color and compare_to_card.suit != trump_color:
+        return int(winner_card.rank) - int(compare_to_card.rank)
+
+    if (winner_card.suit == "w" and compare_to_card.suit != "w") or (winner_card.suit == "w" and compare_to_card.suit == "w"):
+        return 1
+    if winner_card.suit != "w" and compare_to_card.suit == "w":
+        return -1
+    if winner_card.suit == "n" and compare_to_card.suit != "n":
+        return -1
+    if winner_card.suit != "n" and compare_to_card.suit == "n":
+        return 1
+    if winner_card.suit == "n" and compare_to_card.suit == "n":
+        return 1
