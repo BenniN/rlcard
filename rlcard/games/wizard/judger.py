@@ -11,12 +11,9 @@ class WizardJudger:
     def __init__(self, np_random):
         self.np_random = np_random
 
-    def receive_points(self, points, players, player_id, cards) -> list:
-        new_points = cards2value(cards)
-
-        # only player who got the trick, only he receives the reward
-        if players[player_id].is_single_player:
-            points[player_id] += new_points
+    def receive_points(self, points, last_round_points) -> list:
+        for i in range(points):
+            points[i]+= last_round_points[i]
 
         return points
 
