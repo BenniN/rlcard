@@ -52,13 +52,19 @@ File: ./jsondata/action_space.json
 
 Detailed encoding needs to be implemented
 
-| indexes |                                     Description                                     |
-|:-------:|:-----------------------------------------------------------------------------------:|
-|    -    |                            The cards on the players hand                            |
-|    -    |                The cards who where responsible for predicted tricks                 |
-|    -    |                       The card that currently wins the trick                        |
-|    -    |                       All the cards within the current trick                        |
-|    -    | All the cards that haven't been played jet and may still be played by other players |
+| indexes  |                                     Description                                     |
+|:--------:|:-----------------------------------------------------------------------------------:|
+|   0-59   |                            The cards on the players hand                            |
+|  60-119  |             The top card which determines the trump colour of the round             |
+| 120-179  |                     The first card on which you have to follow                      |
+| 180-239  | All the cards that haven't been played jet and may still be played by other players |
+| 240-299  |                       The card that currently wins the trick                        |
+| 300-359  |                       All the cards within the current trick                        |
+| 360-383  |                                  Game Information                                   |
+| 360-365  |                      The player who started the current round                       |
+| 366-371  |                 Position of player for card played in current trick                 |
+| 372-377  |                        The player who wins the current round                        |
+| 378-383  |                     Top card (trump) colour, or Narr, or Wizard                     |
 
 
 ## Classes

@@ -158,9 +158,9 @@ def encode_observation_var0(state, num_players=4):
         - [300-359] cards in trick
         - [360-383] Game Information
             [360-365] Player who started round
-            [366-371] Card played position for trick
+            [366-371] Card played position for current trick
             [372-377] player who wins current round
-            [378-383] color
+            [378-383] color, Narr, or wizard
         '''
 
     obs = np.zeros((384), dtype=int)
