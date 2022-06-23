@@ -34,7 +34,7 @@ class WizardGame():
         - last_round_winner_idx (int): the last round winner
     '''
 
-    num_rounds: int = 15
+    max_num_rounds: int = 15
     num_actions: int = 60
 
     def __init__(self, allow_step_back=False):
@@ -43,7 +43,7 @@ class WizardGame():
         self.np_random: np.random.RandomState = np.random.RandomState()
         self.num_players: int = 4  # there could be 3 to 6 players
         self.points: list[int] = [0 for _ in range(self.num_players)]
-        self.num_rounds = self.num_actions / self.num_players
+        self.max_num_rounds = self.num_actions / self.num_players
 
         self.dealer: Dealer = None
         self.players: list = None
@@ -61,6 +61,8 @@ class WizardGame():
         ''' Specify some game specific parameters, such as number of players '''
 
         self.num_players = game_config['game_num_players']
+        self.max_num_rounds = self.num_actions / self.num_players
+        self.points: list[int] = [0 for _ in range(self.num_players)]
 
     def init_game(self) -> tuple[dict, Any]:
         self.points = [0 for _ in range(self.num_players)]
@@ -82,13 +84,16 @@ class WizardGame():
         for i in range(self.num_players):
             self.dealer.deal_cards(self.players[i], self.round_counter)
 
+        self.top_card = self.dealer.flip_top_card()
+
         # player starts the game
-        self.current_player = random.randint(0, self.num_players)
+        self.current_player = random.randint(0, self.num_players - 1)
+        print("CurrentPlayer:", self.current_player)
 
         self.round = Round(self.np_random)
-        self.round.start_new_round(0)
+        self.round.start_new_round(self.current_player, self.num_players, self.round_counter, self.top_card)
 
-        state = None #self.get_state(self.current_player)
+        state = self.get_state(self.current_player)
 
         self.history = []
         self.trick_history = []
@@ -107,7 +112,7 @@ class WizardGame():
         state['num_players'] = self.get_num_players()
         state['current_player'] = self.round.current_player_idx
         state['current_trick_round'] = self.round_counter
-        state['played_tricks'] = self.trick_history
+        state['tricks_played'] = self.trick_history
         state['last_round_winner'] = self.last_round_winner_idx
         return state
 
@@ -128,7 +133,8 @@ class WizardGame():
             the_playoffs = deepcopy(self.points)
             the_last_round_winner = deepcopy(self.last_round_winner_idx)
             self.history.append(
-                (the_round, the_players, the_dealer, the_round_counter, the_trick_history, the_playoffs, the_last_round_winner))
+                (the_round, the_players, the_dealer, the_round_counter, the_trick_history, the_playoffs,
+                 the_last_round_winner))
 
         # playing of a single step
         self.round.proceed_round(self.players, action)
@@ -145,14 +151,31 @@ class WizardGame():
         if self.round.is_over:
             self.trick_history.append(cards2list(self.round.trick.copy()))
             self.last_round_winner_idx = self.round.winner_idx
-            self.points = self.judger.receive_points(
-                self.points,
-                self.players,
-                self.last_round_winner_idx,
-                self.round.trick.copy()
-            )
-            self.round.start_new_round(self.last_round_winner_idx)
+            self.points = self.judger.receive_points(self.points, self.round.points)
             self.round_counter += 1
+            new_player_id = (self.round.starting_player_idx + 1) % self.num_players
+            self.dealer = Dealer(self.np_random)
+
+            self.trick_history = []
+
+            if self.round_counter == self.max_num_rounds:
+                self.top_card = None
+            else:
+                self.top_card = self.dealer.flip_top_card()
+
+            self.start_new_round(new_player_id, self.num_players, self.round_counter, self.top_card)
+
+        # if self.round.is_over:
+        #     self.trick_history.append(cards2list(self.round.trick.copy()))
+        #     self.last_round_winner_idx = self.round.winner_idx
+        #     self.points = self.judger.receive_points(
+        #         self.points,
+        #         self.players,
+        #         self.last_round_winner_idx,
+        #         self.round.trick.copy()
+        #     )
+        #     self.round.start_new_round(self.last_round_winner_idx)
+        #     self.round_counter += 1
 
         player_id = self.round.current_player_idx
         state = self.get_state(player_id)
@@ -162,7 +185,7 @@ class WizardGame():
     def step_back(self) -> bool:
         if len(self.history) > 0:
             self.round, self.players, self.dealer, \
-                self.round_counter, self.trick_history, self.points, self.last_round_winner_idx = self.history.pop()
+            self.round_counter, self.trick_history, self.points, self.last_round_winner_idx = self.history.pop()
             return True
         return False
 
@@ -177,14 +200,11 @@ class WizardGame():
         return self.round.current_player_idx
 
     def is_over(self) -> bool:
-        return self.round_counter >= WizardGame.num_rounds
+        return self.round_counter > self.max_num_rounds
 
     def get_payoffs(self) -> list:
-        if self.judge_by_points == 0:
-            return self.points
-        if self.judge_by_points == 1:
-            return self.judger.judge_game(self.points)
-        return self.judger.judge_game_var2(self.points)
+        return self.points
 
     def get_legal_actions(self) -> list:
+        print("legal states", self.round.get_legal_actions(self.players[self.round.current_player_idx]))
         return self.round.get_legal_actions(self.players[self.round.current_player_idx])
