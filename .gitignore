@@ -13,6 +13,7 @@ sonar-project.properties
 .coverage*
 docs/rst
 docs/sphinx
+venv/
 experiments/
 dist/
 rlcard/games/doudizhu/jsondata/
