@@ -1,5 +1,5 @@
-from rlcard.games.wizard.card import WizardCard as Card
-from rlcard.games.wizard.utils import cards2list
+# from rlcard.games.wizard.card import WizardCard as Card
+from rlcard.games.wizard.utils import cards2list, compare_trick_winner
 
 
 class WizardRound:
@@ -24,12 +24,23 @@ class WizardRound:
     def __init__(self, np_random):
         self.np_random = np_random
 
-    def start_new_round(self, starting_player_idx) -> None:
+    def start_new_round(self, starting_player_idx, num_players, sub_rounds_to_play, top_card) -> None:
+        self.top_card = top_card
+        self.round_color = None
+        self.num_players = num_players
+        self.points = [0 for _ in range(self.num_players)]
+        print(self.top_card)
+        if self.top_card != None:
+            rank, suit = str(self.top_card).split('-')
+            self.round_color = suit
         self.current_player_idx: int = starting_player_idx
         self.starting_player_idx: int = starting_player_idx
+        self.sub_rounds_to_play = sub_rounds_to_play
+        self.sub_round_counter = 0
+        self.players_that_played_cards: int = starting_player_idx
         self.trick: list = []
-        self.winner_card: Card = None
-        self.target: Card = None
+        self.winner_card = None
+        self.target = None
         self.is_over: bool = False
         self.winner_idx: int = None
 
@@ -57,15 +68,17 @@ class WizardRound:
             if str(card) == action:
                 remove_index = index
                 break
-
         card = player.hand.pop(remove_index)
 
         # if no card has been player, the first card is the target
+        if self.target == None and card.suit != 'n' and card.suit != 'w':
+            self.target = card
+
         if len(self.trick) == 0:
             self.winner_card = card
             self.winner_idx = self.current_player_idx
         else:
-            current_winner = Card.compare_trick_winner(self.winner_card, card)
+            current_winner = compare_trick_winner(self.winner_card, card, self.top_card)
             if current_winner < 0:
                 self.winner_card = card
                 self.winner_idx = self.current_player_idx
@@ -73,11 +86,22 @@ class WizardRound:
         self.trick.append(card)
 
         # if the trick is full, this round is over
-        if len(self.trick) == WizardRound.num_players:
-            self.is_over = True
+        # if len(self.trick) == WizardRound.num_players:
+        #     self.is_over = True
+
+        self.players_that_played_cards += 1
 
         self.current_player_idx = (
-            self.current_player_idx + 1) % WizardRound.num_players
+                                          self.current_player_idx + 1) % self.num_players
+
+        if self.players_that_played_cards == self.num_players:
+            self.points[self.winner_idx] += 1
+            self.players_that_played_cards = 0
+            self.current_player_idx = self.winner_idx
+            self.sub_round_counter += 1
+
+        if self.players_that_played_cards == self.num_players and self.sub_round_counter == self.sub_rounds_to_play:
+            self.is_over = True
 
     def get_legal_actions(self, player) -> list:
         ''' get legal actions for current player
@@ -90,30 +114,23 @@ class WizardRound:
         legal_actions = []
 
         # if no card has been player, all cards are legal
-        if len(self.trick) == 0:
-            legal_actions = cards2list(hand)
-            return legal_actions
 
-        self.target = self.trick[0]  # get the first card in trick
+        if self.target == None:
+            return cards2list(hand)
 
         # if the cards fit the suit, they must be played
         for card in hand:
             if card.suit == self.target.suit:
                 legal_actions.append(str(card))
 
-        if len(legal_actions) > 0:
-            return legal_actions
+        if len(legal_actions) == 0:
+            return cards2list(hand)
 
-        # if no card of the same suit is on the hand, a trump card must be played
         for card in hand:
-            if card.suit == 'trump':
+            if card.suit == 'n' or card.suit == 'w':
                 legal_actions.append(str(card))
 
-        if len(legal_actions) > 0:
-            return legal_actions
-
-        # else, all other cards are legal
-        return cards2list(hand)
+        return legal_actions
 
     def get_state(self, player) -> dict:
         ''' get state for current player
@@ -124,8 +141,10 @@ class WizardRound:
 
         state = {}
         state['hand'] = cards2list(player.hand)
-        state['trick'] = cards2list(self.trick)
-        state['target'] = str(self.target) if str(
+        state['current_trick'] = cards2list(self.trick)
+        state['top_card'] = str(self.top_card)
+        state['round_color'] = self.round_color
+        state['target_card'] = str(self.target) if str(
             self.target) is not None else None
         state['winner_card'] = str(self.winner_card) if str(
             self.winner_card) is not None else None
