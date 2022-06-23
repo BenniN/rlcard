@@ -1,17 +1,15 @@
 import numpy as np
 from collections import OrderedDict
 
-import rlcard
+from rlcard.games.wizard.game import WizardGame
 from rlcard.envs import Env
 from rlcard.games.wizard.utils import ACTION_LIST, ACTION_SPACE
 from rlcard.games.wizard.utils import cards2list, encode_observation_var0, encode_observation_perfect_information
 
 DEFAULT_GAME_CONFIG = {
     'game_num_players': 4,
-    'game_variant': 'standard',
     # 0: judge by points, 1: judge by game, 2: judge by game var2
     'game_judge_by_points': 2,
-    'game_activate_heuristic': True,
     'game_with_perfect_information': False,
 }
 
@@ -33,16 +31,11 @@ class WizardEnv(Env):
         self.name = 'wizard'
         self.default_game_config = DEFAULT_GAME_CONFIG
 
-        # select the proper game variant
-        variant = config['game_variant'] if 'game_variant' in config else DEFAULT_GAME_CONFIG['game_variant']
-        self.game = map_to_Game(variant)()
+        self.game = WizardGame()
 
         super().__init__(config)
-        if self.game.with_perfect_information:
-            self.state_shape = [[498] for _ in range(self.num_players)]
-        else:
-            self.state_shape = [[336] for _ in range(self.num_players)]
-        self.action_shape = [None for _ in range(self.num_players)]
+
+        self.state_shape = [[384] for _ in range(self.num_players)]
 
     def _extract_state(self, state) -> OrderedDict:
         ''' Extract the observation for each player
@@ -51,21 +44,12 @@ class WizardEnv(Env):
         extracted_state: dict = OrderedDict()
         legal_actions: OrderedDict = self._get_legal_actions()
 
-        is_raeuber_game = self.game.__class__.__name__ == 'GameRaeuber'
+        # perfect_info_state = self.get_perfect_information()
 
-        perfect_info_state = self.get_perfect_information()
-        if self.game.with_perfect_information:
-            extracted_state['obs'] = encode_observation_var1(
-                encode_observation_perfect_information(perfect_info_state),
-                is_raeuber_game
-            )
-        else:
-            extracted_state['obs'] = encode_observation_var1(
-                state,
-                is_raeuber_game
-            )
+        extracted_state['obs'] = encode_observation_var0(
+            state,
+        )
         # setup extracted state
-        extracted_state['obs'] = encode_observation_var1(state)
         extracted_state['legal_actions'] = legal_actions
         extracted_state['raw_obs'] = state
         extracted_state['raw_legal_actions'] = [
@@ -106,7 +90,6 @@ class WizardEnv(Env):
         state['num_players'] = self.num_players
         state['hand_cards'] = [cards2list(player.hand)
                                for player in self.game.players]
-        state['blind_cards='] = self.game.blind_cards
         state['trick'] = cards2list(self.game.round.trick)
         state['played_tricks'] = self.game.trick_history
         state['current_player'] = self.game.round.current_player_idx
