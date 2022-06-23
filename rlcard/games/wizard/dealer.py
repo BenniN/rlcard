@@ -49,8 +49,4 @@ class WizardDealer:
             (object): The object of UnoCard at the top of the deck
         '''
         top_card = self.deck.pop()
-        while top_card.trait == 'wild_draw_4':
-            self.deck.append(top_card)
-            self.shuffle()
-            top_card = self.deck.pop()
         return top_card
