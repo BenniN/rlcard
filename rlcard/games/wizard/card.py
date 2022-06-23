@@ -1,4 +1,5 @@
 from termcolor import colored
+import random
 
 
 def map_suit_to_color(suit) -> str:
@@ -49,7 +50,7 @@ class WizardCard:
             "1-g", "2-g", "3-g", "4-g", "5-g", "6-g", "7-g", "8-g", "9-g", "10-g", "11-g", "12-g", "13-g",
             "1-b", "2-b", "3-b", "4-b", "5-b", "6-b", "7-b", "8-b", "9-b", "10-b", "11-b", "12-b", "13-b",
             "1-y", "2-y", "3-y", "4-y", "5-y", "6-y", "7-y", "8-y", "9-y", "10-y", "11-y", "12-y", "13-y",
-            "n-1", "n-2", "n-3", "n-4", "w-1", "w-2", "w-3", "w-4"
+            "0-n", "1-n", "2-n", "3-n", "0-w", "1-w", "2-w", "3-w"
         ],
         "non_colour_card_values": {
             "n": 0,
@@ -88,8 +89,8 @@ class WizardCard:
     def __gt__(self, other) -> bool:
         return WizardCard.compare_card_rank(self, other) > 0
 
-    def __eq__(self, other) -> bool:
-        return WizardCard.compare_card_rank(self, other) == 0
+    # def __eq__(self, other) -> bool:
+    #     return WizardCard.compare_card_rank(self, other) == 0
 
     def __le__(self, other) -> bool:
         return WizardCard.compare_card_rank(self, other) <= 0
@@ -97,8 +98,8 @@ class WizardCard:
     def __ge__(self, other) -> bool:
         return WizardCard.compare_card_rank(self, other) >= 0
 
-    def __ne__(self, other) -> bool:
-        return WizardCard.compare_card_rank(self, other) != 0
+    # def __ne__(self, other) -> bool:
+    #     return WizardCard.compare_card_rank(self, other) != 0
 
     def get_value(self) -> float:
         if self.rank in WizardCard.info["ranks"]:
@@ -130,7 +131,7 @@ class WizardCard:
         if card1.suit != "n" and card2.suit == "n":
             return 1
         if card1.suit == "n" and card2.suit == "n":
-            pass
+            return 1
         if card1.suit == "w" and card2.suit == "w":
             # first wizard wins so card1.
             return 1
@@ -156,9 +157,11 @@ class WizardCard:
         if card1.suit == "y":
             idx_card1 = WizardCard.info["yellow_cards_ranks"].index(card1.rank)
         if card1.suit == "n":
-            idx_card1 = WizardCard.info["non_colour_card_ranks"].index(card1.rank)
+            idx_card1 = WizardCard.info["non_colour_card_ranks"].index(
+                card1.rank)
         if card1.suit == "w":
-            idx_card1 = WizardCard.info["non_colour_card_ranks"].index(card1.rank)
+            idx_card1 = WizardCard.info["non_colour_card_ranks"].index(
+                card1.rank)
 
         idx_card2 = 0
         if card2.suit == "r":
@@ -170,21 +173,13 @@ class WizardCard:
         if card2.suit == "y":
             idx_card2 = WizardCard.info["yellow_cards_ranks"].index(card2.rank)
         if card2.suit == "n":
-            idx_card2 = WizardCard.info["non_colour_card_ranks"].index(card2.rank)
+            idx_card2 = WizardCard.info["non_colour_card_ranks"].index(
+                card2.rank)
         if card2.suit == "w":
-            idx_card2 = WizardCard.info["non_colour_card_ranks"].index(card2.rank)
+            idx_card2 = WizardCard.info["non_colour_card_ranks"].index(
+                card2.rank)
 
         return idx_card1 - idx_card2
-
-    @staticmethod
-    def compare_trick_winner(target, compare_to_card, trump_colour="") -> int:
-        ''' Compare the winner of a trick
-
-        Parameters:
-            - target (WizardCard): The current winner of the trick
-            - compare_to_card (WizardCard): The card to compare to
-        '''
-        trump_colour = trump_colour
 
     @staticmethod
     def split_ranks() -> tuple[list, list, list, list, list, list]:
