@@ -115,7 +115,7 @@ class WizardRound:
 
         # if no card has been player, all cards are legal
 
-        if self.target == None:
+        if self.target is None:
             return cards2list(hand)
 
         # if the cards fit the suit, they must be played
@@ -129,7 +129,7 @@ class WizardRound:
         for card in hand:
             if card.suit == 'n' or card.suit == 'w':
                 legal_actions.append(str(card))
-
+        print("in legal actions")
         return legal_actions
 
     def get_state(self, player) -> dict:

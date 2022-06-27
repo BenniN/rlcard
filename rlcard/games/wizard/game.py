@@ -206,5 +206,5 @@ class WizardGame():
         return self.points
 
     def get_legal_actions(self) -> list:
-        print("legal states", self.round.get_legal_actions(self.players[self.round.current_player_idx]))
+        print("in get_legal_actions: legal states", self.round.get_legal_actions(self.players[self.round.current_player_idx]))
         return self.round.get_legal_actions(self.players[self.round.current_player_idx])

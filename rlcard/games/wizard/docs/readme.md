@@ -50,7 +50,7 @@ File: ./jsondata/action_space.json
 |     **played_tricks**      |       The tricks that have already been played: 2D-List        | ['1-r', '13-y', 'n-1', 'w-4'], [...], ...] |
 |   **last_round_winner**    |               The winner of the last round: int                |                     3                      |
 
-Detailed encoding needs to be implemented
+Encoding for wizard
 
 | indexes  |                                     Description                                     |
 |:--------:|:-----------------------------------------------------------------------------------:|
