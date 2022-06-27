@@ -26,7 +26,7 @@ class WizardEnv(Env):
     '''
 
     def __init__(self, config):
-        ''' Initialize the Cego environment
+        ''' Initialize the wizard environment
         '''
         self.name = 'wizard'
         self.default_game_config = DEFAULT_GAME_CONFIG
