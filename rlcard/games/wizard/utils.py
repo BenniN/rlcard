@@ -141,7 +141,7 @@ def set_observation(obs, plane, indexes):
 
 
 def encode_observation_var0(state, num_players=4):
-    ''' the shape of this encoding is (336)
+    ''' the shape of this encoding is (383)
 
     Parameters:
         - state (dict): the state of the game
