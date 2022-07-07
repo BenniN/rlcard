@@ -113,23 +113,29 @@ class WizardRound:
         hand = player.hand  # get hand of current player
         legal_actions = []
 
-        # if no card has been player, all cards are legal
+        # if no card has been played, all cards are legal
 
         if self.target is None:
+            print("in get legal actions target = none: ", legal_actions)
             return cards2list(hand)
 
         # if the cards fit the suit, they must be played
         for card in hand:
             if card.suit == self.target.suit:
+                print("card suit = target suit:", legal_actions.append(str(card)))
                 legal_actions.append(str(card))
 
         if len(legal_actions) == 0:
+            print("still no legal actions", legal_actions)
             return cards2list(hand)
+        print("hand should be legal actions:", legal_actions)
 
         for card in hand:
             if card.suit == 'n' or card.suit == 'w':
                 legal_actions.append(str(card))
-        print("in legal actions")
+                print("n or w should be in legal actions", legal_actions)
+
+        print("in legal actions before return", legal_actions)
         return legal_actions
 
     def get_state(self, player) -> dict:

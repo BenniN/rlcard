@@ -195,8 +195,8 @@ def encode_observation_var0(state, num_players=4):
     encode_obs_game_info(state, obs, 360)
 
     print("hand_cards_idx", hand_cards_idx)
-    print(state['top_card'], top_card_id)
-    print(state['target_card'], target_card_id)
+    print("top card: ", state['top_card'], top_card_id)
+    print("target card: ", state['target_card'], target_card_id)
     print(obs)
 
     return obs
