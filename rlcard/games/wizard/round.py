@@ -111,12 +111,14 @@ class WizardRound:
         '''
 
         hand = player.hand  # get hand of current player
+        hand_size = player.hand_size
         legal_actions = []
 
         # if no card has been played, all cards are legal
 
         if self.target is None:
             print("in get legal actions target = none: ", legal_actions)
+            print("cards2list if target is None", cards2list(hand))
             return cards2list(hand)
 
         # if the cards fit the suit, they must be played
@@ -126,7 +128,8 @@ class WizardRound:
                 legal_actions.append(str(card))
 
         if len(legal_actions) == 0:
-            print("still no legal actions", legal_actions)
+            print("hand size while legal actions == 0: ", len(hand))
+            print("still no legal actions", legal_actions, cards2list(hand))
             return cards2list(hand)
         print("hand should be legal actions:", legal_actions)
 

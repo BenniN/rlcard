@@ -21,7 +21,8 @@ class WizardPlayer:
         self.player_id: int = player_id
         self.is_single_player: bool = is_single_player
         self.hand: list = []
-        self.num_tricks= 0
+        self.hand_size: int = len(self.hand)
+        self.num_tricks = 0
 
     def get_player_id(self) -> int:
         ''' Return the id of the player
