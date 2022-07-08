@@ -254,16 +254,16 @@ def encode_obs_game_info(state, obs, start_idx):
 
     obs[start_idx + start_player_idx] = 1
 
-    if winner_idx != None:
+    if winner_idx is not None:
         obs[start_idx + winner_idx] = 1
 
-    if current_player_idx != None:
+    if current_player_idx is not None:
         obs[start_idx + 6 + current_player_idx] = 1
 
-    if start_player_idx != None:
+    if start_player_idx is not None:
         obs[start_idx+12+start_player_idx] = 1
 
-    if round_color != None:
+    if round_color is not None:
         obs[start_idx+18+round_color] = 1
 
 
