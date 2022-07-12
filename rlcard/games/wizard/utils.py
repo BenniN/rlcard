@@ -70,13 +70,14 @@ def get_known_cards(hand, top_card, tricks_played, current_trick, start_idx=0) -
     known_cards = []
     if hand is not None:
         known_cards.extend(hand)
-    if top_card is not None:
+    if top_card is not None and top_card != 'None':
+        print("Top Card:", top_card)
+        print("hello there")
         known_cards.append(top_card)
     if tricks_played is not None:
         known_cards.extend([card for trick in tricks_played for card in trick])
     if current_trick is not None:
         known_cards.extend(current_trick)
-    print(known_cards)
     card_idxs = [start_idx + ACTION_SPACE[card] for card in known_cards]
     return card_idxs
 
@@ -86,8 +87,6 @@ def get_cards_played(tricks_played, current_trick) -> list:
 
     tricks = tricks_played[:]
     tricks.append(current_trick)
-
-    # print("get_cards_played:",tricks)
 
     card_idxs = []
     for trick in tricks:
@@ -194,11 +193,6 @@ def encode_observation_var0(state, num_players=4):
 
     encode_obs_game_info(state, obs, 360)
 
-    print("hand_cards_idx", hand_cards_idx)
-    print("top card: ", state['top_card'], top_card_id)
-    print("target card: ", state['target_card'], target_card_id)
-    print("encoding:", obs)
-
     return obs
 
 
@@ -263,7 +257,7 @@ def encode_obs_game_info(state, obs, start_idx):
     if start_player_idx is not None:
         obs[start_idx+12+start_player_idx] = 1
 
-    if round_color is not None:
+    if round_color is not None and round_color != 'Invalid suit':
         obs[start_idx+18+round_color] = 1
 
 
