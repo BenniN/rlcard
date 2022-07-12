@@ -22,6 +22,7 @@ class WizardDealer:
 
     ''' Initialize a uno dealer class
     '''
+
     def __init__(self, np_random):
         self.np_random = np_random
         self.deck = init_deck()
@@ -52,5 +53,7 @@ class WizardDealer:
         Returns:
             (object): The object of UnoCard at the top of the deck
         '''
+        if len(self.deck) == 0:
+            return None
         top_card = self.deck.pop()
         return top_card
