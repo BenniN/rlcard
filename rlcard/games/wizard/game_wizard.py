@@ -1,3 +1,0 @@
-'''todo....
-normal game
-'''

@@ -10,6 +10,7 @@ DEFAULT_GAME_CONFIG = {
     'game_num_players': 4,
     # 0: judge by points, 1: judge by game, 2: judge by game var2
     'game_judge_by_points': 2,
+    'game_num_rounds': 1,
     'game_with_perfect_information': False,
     'game_train_players': [False, False, False, False],
     'game_analysis_mode': False
@@ -33,7 +34,7 @@ class WizardEnv(Env):
         self.name = 'wizard'
         self.default_game_config = DEFAULT_GAME_CONFIG
         self.game_train_players = config['game_train_players'] if 'game_train_players' in config else \
-        DEFAULT_GAME_CONFIG['game_train_players']
+            DEFAULT_GAME_CONFIG['game_train_players']
 
         self.game = WizardGame()
 
