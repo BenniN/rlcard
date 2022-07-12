@@ -11,18 +11,18 @@ from rlcard.utils import (
 )  # import some useful functions
 
 args = {
-    'env_name': 'cego',
+    'env_name': 'wizard',
     'game_judge_by_points': 0,
     "game_train_players": [True, True, True, True],
     'cuda': '',
-    'seed': 20,
+    'seed': 42,
     'load_model': True,
     'xpid': 'dmc',
     'save_interval': 30,
     'num_actor_devices': 1,
     'num_actors': 5,
     'training_device': '0',
-    'log_dir': 'final_models/dmc_models/dmc_solo_soft_heuristic',
+    'log_dir': 'final_models/dmc_models/tricks_only',
     'total_frames': 100000000000,
     'exp_epsilon': 0.01,
     'batch_size': 32,

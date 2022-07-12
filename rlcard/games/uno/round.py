@@ -65,7 +65,7 @@ class UnoRound:
         card_info = action.split('-')
         color = card_info[0]
         trait = card_info[1]
-        # remove correspongding card
+        # remove corresponding card
         remove_index = None
         if trait == 'wild' or trait == 'wild_draw_4':
             for index, card in enumerate(player.hand):

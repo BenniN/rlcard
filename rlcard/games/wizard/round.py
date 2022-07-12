@@ -163,3 +163,27 @@ class WizardRound:
         state['legal_actions'] = self.get_legal_actions(player)
         state['start_player'] = self.starting_player_idx
         return state
+
+    def get_hand_value(self, player) -> int:
+        ''' get handvalue for current player
+            the handvalue is needed for the forcasting
+
+                Parameters:
+                    - player (Player): the current player
+                '''
+
+        hand_value = 0
+        hand = player.hand
+        handsize = len(player.hand)
+
+        if handsize == 1:
+            if self.current_player_idx == 0:
+                    for card in hand:
+                        cards2list(hand)
+
+
+
+
+
+        return hand_value
+

@@ -38,11 +38,11 @@ class WizardEnv(Env):
         self.game = WizardGame()
 
         super().__init__(config)
-        if self.game.with_perfect_information:
-            self.state_shape = [[498] for _ in range(self.num_players)]
-        else:
-            self.state_shape = [[384] for _ in range(self.num_players)]
-        self.action_shape = [None for _ in range(self.num_players)]
+        # if self.game.with_perfect_information:
+        #     self.state_shape = [[498] for _ in range(self.num_players)]
+        # else:
+        self.state_shape = [[384] for _ in range(self.num_players)]
+        # self.action_shape = [None for _ in range(self.num_players)]
 
         def run(self, is_training=False):
             '''
