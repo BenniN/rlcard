@@ -12,8 +12,8 @@ class WizardJudger:
         self.np_random = np_random
 
     def receive_points(self, points, last_round_points) -> list:
-        for i in range(points):
-            points[i]+= last_round_points[i]
+        for i in range(len(points)):
+            points[i] += last_round_points[i]
 
         return points
 
