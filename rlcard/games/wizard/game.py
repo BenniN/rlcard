@@ -71,6 +71,8 @@ class WizardGame():
         self.num_players = game_config['game_num_players']
         self.max_num_rounds = game_config['game_num_rounds']
         self.points: list[int] = [0 for _ in range(self.num_players)]
+        self.with_perfect_information = game_config['game_with_perfect_information']
+        self.analysis_mode = game_config['game_analysis_mode']
 
     def init_game(self) -> tuple[dict, Any]:
         self.points = [0 for _ in range(self.num_players)]

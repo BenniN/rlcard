@@ -459,7 +459,7 @@ def valid_cego(cego_player_cards) -> bool:
     return value >= 15
 
 
-def save_args_params(args):
+def  save_args_params(args):
     if not os.path.exists(args["log_dir"]):
         os.makedirs(args["log_dir"])
 

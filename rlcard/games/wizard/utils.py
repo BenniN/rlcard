@@ -71,8 +71,6 @@ def get_known_cards(hand, top_card, tricks_played, current_trick, start_idx=0) -
     if hand is not None:
         known_cards.extend(hand)
     if top_card is not None and top_card != 'None':
-        print("Top Card:", top_card)
-        print("hello there")
         known_cards.append(top_card)
     if tricks_played is not None:
         known_cards.extend([card for trick in tricks_played for card in trick])
@@ -217,9 +215,7 @@ def encode_observation_perfect_information(state, is_raeuber=False):
         - ....
 
     '''
-    obs = np.zeros((1000), dtype=int)
 
-    return obs
 
 
 def map_color_to_index(color) -> str:

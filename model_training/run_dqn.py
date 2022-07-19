@@ -1,4 +1,5 @@
 import os
+import time
 
 import torch
 
@@ -18,28 +19,29 @@ from rlcard.utils import (
 
 # arguments for the random search
 # dqn_point_var_0/model_4
-num_cards = 60
 
 args = {
+    # "algorithm": "nfsp",
+    # "log_dir": "final_models/nfsp_wizard_player_1",
     "algorithm": "dqn",
-    "log_dir": "final_models/dqn_wizard_player_0",
+    "log_dir": "final_models/dqn_wizard_max_round_four_players",
     "env_name": "wizard",
     "game_judge_by_points": 0,
     "num_cards": 60,
-    "num_players": 3,
-    "seed": 42,
-    "replay_memory_size": 20000,
+    "num_players": 4,
+    "seed": 24,
+    "replay_memory_size": 10000,
     "update_target_estimator_every": 1000,
-    "discount_factor": 0.99,
+    "discount_factor": 0.95,
     "epsilon_start": 1.0,
     "epsilon_end": 0.1,
-    "epsilon_decay_steps": 20000,
+    "epsilon_decay_steps": 100000,
     "batch_size": 32,
     "mlp_layers": [512, 512],
     "num_eval_games": 1000,
     "num_episodes": 50000,
-    "evaluate_every": 500,
-    "learning_rate": 1e-05,  # 1*10^-5 oder 0.00001
+    "evaluate_every": 100,
+    "learning_rate": 0.0001,  # 1*10^-5 oder 0.00001
 }
 
 
@@ -55,9 +57,11 @@ def train(algorithm, log_dir, env_name, num_cards, num_players, game_judge_by_po
     set_seed(seed)
 
     max_rounds = int(num_cards / num_players)
-    rounds_to_evaluate = [1, int(max_rounds/2), max_rounds]
+    # rounds_to_evaluate = [7]
+    # rounds_to_evaluate = [int(max_rounds / 2)]
+    rounds_to_evaluate = [max_rounds]
 
-    for round in rounds_to_evaluate:
+    for eachround in rounds_to_evaluate:
         # Make the environment with seed
         env = rlcard.make(
             env_name,
@@ -65,18 +69,20 @@ def train(algorithm, log_dir, env_name, num_cards, num_players, game_judge_by_po
                 'seed': seed,
                 'game_judge_by_points': game_judge_by_points,
                 'game_num_players': num_players,
-                'game_num_rounds': round
+                'game_num_rounds': eachround
             }
         )
 
-        # # this is our DQN agent
         if algorithm == 'nfsp':
             pass
             agent = NFSPAgent(
                 num_actions=env.num_actions,
                 state_shape=env.state_shape[0],
-                mlp_layers=mlp_layers,
+                hidden_layers_sizes=[64, 64],
+                q_mlp_layers=[64, 64],
+                device=device,
             )
+            # # this is our DQN agent
         else:
             agent = DQNAgent(
                 num_actions=env.num_actions,
@@ -134,14 +140,19 @@ def train(algorithm, log_dir, env_name, num_cards, num_players, game_judge_by_po
 
         # Plot the learning curve
         plot_curve(csv_path, log_dir + "/fig_model_round_" +
-                   str(round), algorithm)
+                   str(eachround), algorithm)
 
         # Save model
-        save_path = os.path.join(log_dir, 'model_round'+str(round)+'.pth')
+        save_path = os.path.join(log_dir, 'model_round_' + str(eachround) + '.pth')
         torch.save(agent, save_path)
         print('Model saved in', save_path)
 
 
 if __name__ == '__main__':
-    os.environ["CUDA_VISIBLE_DEVICES"] = "cpu"
+    start = time.time()
+    environment = os.environ["CUDA_VISIBLE_DEVICES"] = ""
+    print(environment)
     train(**args)
+    end = time.time()
+    total_time = end - start
+    print("Execution Time:", total_time)

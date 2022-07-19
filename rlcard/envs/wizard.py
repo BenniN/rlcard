@@ -39,63 +39,63 @@ class WizardEnv(Env):
         self.game = WizardGame()
 
         super().__init__(config)
-        # if self.game.with_perfect_information:
-        #     self.state_shape = [[498] for _ in range(self.num_players)]
-        # else:
-        self.state_shape = [[384] for _ in range(self.num_players)]
-        # self.action_shape = [None for _ in range(self.num_players)]
+        if self.game.with_perfect_information:
+            self.state_shape = [[498] for _ in range(self.num_players)]
+        else:
+            self.state_shape = [[384] for _ in range(self.num_players)]
+        self.action_shape = [None for _ in range(self.num_players)]
 
-        def run(self, is_training=False):
-            '''
-            Override the run method of the Env class
-            '''
-            trajectories = [[] for _ in range(self.num_players)]
-            state, player_id = self.reset()
+    def run(self, is_training=False):
+        '''
+        Override the run method of the Env class
+        '''
+        trajectories = [[] for _ in range(self.num_players)]
+        state, player_id = self.reset()
 
-            # Loop to play the game
-            trajectories[player_id].append(state)
-            while not self.is_over():
-                # Agent plays
-                if is_training:
-                    if not self.game_train_players[player_id]:
+        # Loop to play the game
+        trajectories[player_id].append(state)
+        while not self.is_over():
+            # Agent plays
+            if is_training:
+                if not self.game_train_players[player_id]:
                         # print("state:", state)
                         action, _ = self.agents[player_id].eval_step(state)
-                    else:
+                else:
                         # print("state:", state)
                         action = self.agents[player_id].step(state)
-                else:
-                    # print("state:", state)
-                    action, _ = self.agents[player_id].eval_step(state)
+            else:
+                # print("state:", state)
+                action, _ = self.agents[player_id].eval_step(state)
                 # if not is_training:
                 #     action, _ = self.agents[player_id].eval_step(state)
                 # else:
                 #     action = self.agents[player_id].step(state)
 
                 # Environment steps
-                next_state, next_player_id = self.step(
-                    action, self.agents[player_id].use_raw)
-                # Save action
-                trajectories[player_id].append(action)
+            next_state, next_player_id = self.step(
+                action, self.agents[player_id].use_raw)
+            # Save action
+            trajectories[player_id].append(action)
 
-                # Set the state and player
-                state = next_state
-                player_id = next_player_id
+            # Set the state and player
+            state = next_state
+            player_id = next_player_id
 
-                # Save state.
-                if not self.game.is_over():
-                    trajectories[player_id].append(state)
-
-            # Add a final state to all the players
-            for player_id in range(self.num_players):
-                state = self.get_state(player_id)
+            # Save state.
+            if not self.game.is_over():
                 trajectories[player_id].append(state)
 
-            # Payoffs
-            payoffs = self.get_payoffs()
+            # Add a final state to all the players
+        for player_id in range(self.num_players):
+            state = self.get_state(player_id)
+            trajectories[player_id].append(state)
 
-            if self.game.analysis_mode:
-                return trajectories, payoffs, self.get_perfect_information()
-            return trajectories, payoffs
+        # Payoffs
+        payoffs = self.get_payoffs()
+
+        if self.game.analysis_mode:
+            return trajectories, payoffs, self.get_perfect_information()
+        return trajectories, payoffs
 
     def _extract_state(self, state) -> OrderedDict:
         ''' Extract the observation for each player
