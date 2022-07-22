@@ -39,7 +39,7 @@ args = {
     "batch_size": 32,
     "mlp_layers": [512, 512],
     "num_eval_games": 1000,
-    "num_episodes": 100000,
+    "num_episodes": 1000000,
     "evaluate_every": 1000,
     "learning_rate": 5e-06,  # 1*10^-5 oder 0.00001
 }
