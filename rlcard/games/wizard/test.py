@@ -39,7 +39,7 @@ if __name__ == '__main__':
         config={
             'seed': 42,
             'game_num_players': 3,
-            'game_num_rounds': 2
+            'game_num_rounds': 4
         }
     )
 

@@ -179,4 +179,4 @@ def train(log_dir, env_name, game_judge_by_points, game_variant, game_activate_h
     print('Model saved in', save_path)
 
 if __name__ == '__main__':
-    randomSearch(args, 'random_search_results/nfsp_point_var_0', random_search_iterations)
+    randomSearch(args, 'random_search_results/nfsp_point_var_useless', random_search_iterations)

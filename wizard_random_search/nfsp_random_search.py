@@ -6,7 +6,7 @@ import rlcard
 from rlcard.agents import NFSPAgent
 from rlcard.agents.random_agent import RandomAgent
 
-from rlcard.games.cego.utils import get_random_search_args, args_to_str, save_args_params
+from rlcard.games.wizard.utils import get_random_search_args, args_to_str, save_args_params
 
 from rlcard.utils import (
     tournament,
@@ -37,8 +37,8 @@ args = {
     "q_replay_memory_init_size": [100],
     "q_update_target_estimator_every": [1000, 2000, 10000],
     "q_discount_factor": [0.75, 0.8, 0.95, 0.99],
-    "q_epsilon_start": [0.06, 0.1],
-    "q_epsilon_end": [0, 0.01],
+    "q_epsilon_start": [0.06, 0.1, 1.0],
+    "q_epsilon_end": [0, 0.1, 0.01],
     "q_epsilon_decay_steps": [int(50000)],
     "q_batch_size": [32, 64],
     "q_train_every": [1],

@@ -24,24 +24,24 @@ args = {
     # "algorithm": "nfsp",
     # "log_dir": "final_models/nfsp_wizard_player_1",
     "algorithm": "dqn",
-    "log_dir": "final_models/dqn_wizard_max_round_four_players",
+    "log_dir": "final_models/dqn_wizard_best_params_three_players",
     "env_name": "wizard",
     "game_judge_by_points": 0,
     "num_cards": 60,
-    "num_players": 4,
-    "seed": 24,
-    "replay_memory_size": 10000,
+    "num_players": 3,
+    "seed": 42,
+    "replay_memory_size": 200000,
     "update_target_estimator_every": 1000,
-    "discount_factor": 0.95,
+    "discount_factor": 0.99,
     "epsilon_start": 1.0,
     "epsilon_end": 0.1,
     "epsilon_decay_steps": 100000,
     "batch_size": 32,
     "mlp_layers": [512, 512],
     "num_eval_games": 1000,
-    "num_episodes": 50000,
-    "evaluate_every": 100,
-    "learning_rate": 0.0001,  # 1*10^-5 oder 0.00001
+    "num_episodes": 100000,
+    "evaluate_every": 1000,
+    "learning_rate": 5e-06,  # 1*10^-5 oder 0.00001
 }
 
 

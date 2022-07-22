@@ -21,7 +21,7 @@ from rlcard.utils import (
 # nfsp_poinr_var_0_tuned_dqn/model_12
 args = {
     "algorithm": "nfsp",
-    "_log_dir": "final_models/nfsp_wizard_player_0",
+    "_log_dir": "final_models/nfsp_wizard_player_2",
     "_env_name": "wizard",
     "_game_judge_by_points": 0,
     "_num_cards": 60,
@@ -32,13 +32,13 @@ args = {
     "_anticipatory_param": 0.1,
     "_batch_size": 256,
     "_train_every": 1,
-    "_rl_learning_rate": 0.0001,
+    "_rl_learning_rate": 5e-06,
     "_sl_learning_rate": 0.001,
     "_min_buffer_size_to_learn": 100,
-    "_q_replay_memory_size": 20000,
+    "_q_replay_memory_size": 200000,
     "_q_replay_memory_init_size": 100,
     "_q_update_target_estimator_every": 1000,
-    "_q_discount_factor": 0.95,
+    "_q_discount_factor": 0.99,
     "_q_epsilon_start": 1.0,
     "_q_epsilon_end": 0.1,
     "_q_epsilon_decay_steps": 100000,
@@ -46,8 +46,8 @@ args = {
     "_q_train_every": 1,
     "_q_mlp_layer": [512, 512],
     "_num_eval_games": 1000,
-    "_num_episodes": 40000,
-    "_evaluate_every": 100
+    "_num_episodes": 100000,
+    "_evaluate_every": 1000
 }
 
 
@@ -64,7 +64,7 @@ def train(algorithm, _log_dir, _env_name, _game_judge_by_points, _seed, _num_car
     set_seed(_seed)
 
     max_rounds = int(_num_cards / _num_players)
-    rounds_to_evaluate = [int(max_rounds / 2), max_rounds]
+    rounds_to_evaluate = [max_rounds]
 
     for _each_round in rounds_to_evaluate:
         # Make the environment with seed
