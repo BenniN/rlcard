@@ -7,7 +7,7 @@ from rlcard.games.wizard.utils import ACTION_LIST, ACTION_SPACE
 from rlcard.games.wizard.utils import cards2list, encode_observation_var0, encode_observation_perfect_information
 
 DEFAULT_GAME_CONFIG = {
-    'game_num_players': 4,
+    'game_num_players': 6,
     # 0: judge by points, 1: judge by game, 2: judge by game var2
     'game_judge_by_points': 2,
     'game_num_rounds': 1,

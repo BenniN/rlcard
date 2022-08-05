@@ -48,7 +48,7 @@ def cards2value(cards) -> float:
 
     value = 0
     for card in cards:
-        value += card.get_value()
+        value += card.get_card_forecast_value()
 
     return value
 

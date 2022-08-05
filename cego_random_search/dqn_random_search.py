@@ -6,7 +6,7 @@ import rlcard
 from rlcard.agents import DQNAgent
 from rlcard.agents.random_agent import RandomAgent
 
-from rlcard.games.cego.utils import get_random_search_args, args_to_str, save_args_params
+from rlcard.games.wizard.utils import get_random_search_args, args_to_str, save_args_params
 
 from rlcard.utils import (
     tournament,
@@ -21,11 +21,11 @@ random_search_iterations = 20
 
 # arguments for the random search
 args = {
-    "env_name": ["cego"],
+    "env_name": ["wizard"],
     "game_judge_by_points": [0],
-    "game_variant": ["standard"],
-    "game_activate_heuristic": [True],
-    "seed": [12],
+    "num_cards": [60],
+    "num_players": [3, 4, 5, 6],
+    "seed": [42],
     "replay_memory_size": [50000, 100000, 200000],
     "update_target_estimator_every": [1000, 2000, 10000],
     "discount_factor": [0.75, 0.8, 0.95, 0.99],
@@ -60,7 +60,7 @@ def randomSearch(args: dict, random_search_folder: str, random_search_iterations
         save_search_set(random_search_folder, args_as_string)
 
 
-def train(log_dir, env_name, game_variant, game_activate_heuristic,
+def train(log_dir, env_name, num_cards, num_players,
           game_judge_by_points, seed, replay_memory_size,
           update_target_estimator_every, discount_factor,
           epsilon_start, epsilon_end, epsilon_decay_steps,
@@ -72,77 +72,85 @@ def train(log_dir, env_name, game_variant, game_activate_heuristic,
 
     set_seed(seed)
 
-    # Make the environment with seed
-    env = rlcard.make(
-        env_name,
-        config={
-            'seed': seed,
-            'game_variant': game_variant,
-            'game_activate_heuristic': game_activate_heuristic,
-            'game_judge_by_points': game_judge_by_points
-        }
-    )
+    max_rounds = int(num_cards / num_players)
+    # rounds_to_evaluate = [7]
+    # rounds_to_evaluate = [int(max_rounds / 2)]
+    rounds_to_evaluate = [max_rounds]
 
-    # # this is our DQN agent
-    dqn_agent = DQNAgent(
-        num_actions=env.num_actions,
-        state_shape=env.state_shape[0],
-        mlp_layers=mlp_layers,
-        device=device,
-        replay_memory_size=replay_memory_size,
-        update_target_estimator_every=update_target_estimator_every,
-        discount_factor=discount_factor,
-        epsilon_start=epsilon_start,
-        epsilon_end=epsilon_end,
-        epsilon_decay_steps=epsilon_decay_steps,
-        batch_size=batch_size,
-        learning_rate=learning_rate
+    for eachround in rounds_to_evaluate:
 
-    )
-    agents = [dqn_agent]
-    for _ in range(1, env.num_players):
-        agents.append(RandomAgent(num_actions=env.num_actions))
+        # Make the environment with seed
+        env = rlcard.make(
+            env_name,
+            config={
+                'seed': seed,
+                'game_judge_by_points': game_judge_by_points,
+                'game_num_players': num_players,
+                'game_num_rounds': eachround
+            }
+        )
 
-    env.set_agents(agents)  # set agents to the environment
+        # # this is our DQN agent
+        dqn_agent = DQNAgent(
+            num_actions=env.num_actions,
+            state_shape=env.state_shape[0],
+            mlp_layers=mlp_layers,
+            device=device,
+            replay_memory_size=replay_memory_size,
+            update_target_estimator_every=update_target_estimator_every,
+            discount_factor=discount_factor,
+            epsilon_start=epsilon_start,
+            epsilon_end=epsilon_end,
+            epsilon_decay_steps=epsilon_decay_steps,
+            batch_size=batch_size,
+            learning_rate=learning_rate
 
-    # Start training
-    with Logger(log_dir) as logger:
-        for episode in range(num_episodes):
+        )
+        agents = [dqn_agent]
+        for _ in range(1, env.num_players):
+            agents.append(RandomAgent(num_actions=env.num_actions))
 
-            # Generate data from the environment
-            trajectories, payoffs = env.run(is_training=True)
+        env.set_agents(agents)  # set agents to the environment
 
-            # Reorganaize the data to be state, action, reward, next_state, done
-            trajectories = reorganize(trajectories, payoffs)
+        # Start training
+        with Logger(log_dir) as logger:
+            for episode in range(num_episodes):
 
-            # Feed transitions into agent memory, and train the agent
-            for ts in trajectories[0]:
-                dqn_agent.feed(ts)
+                # Generate data from the environment
+                trajectories, payoffs = env.run(is_training=True)
 
-            # Evaluate the performance.
-            if episode % evaluate_every == 0:
-                logger.log_performance(
-                    env.timestep,
-                    tournament(
-                        env,
-                        num_eval_games,
-                    )[0]
-                )
+                # Reorganaize the data to be state, action, reward, next_state, done
+                trajectories = reorganize(trajectories, payoffs)
 
-        # Get the paths
-        csv_path, fig_path = logger.csv_path, logger.fig_path
+                # Feed transitions into agent memory, and train the agent
+                for ts in trajectories[0]:
+                    dqn_agent.feed(ts)
 
-    # Plot the learning curve
-    plot_curve(csv_path, fig_path, "DQN")
+                # Evaluate the performance.
+                if episode % evaluate_every == 0:
+                    logger.log_performance(
+                        env.timestep,
+                        tournament(
+                            env,
+                            num_eval_games,
+                        )[0]
+                    )
 
-    # Save model
-    save_path = os.path.join(log_dir, 'model.pth')
-    torch.save(dqn_agent, save_path)
-    print('Model saved in', save_path)
+            # Get the paths
+            csv_path, fig_path = logger.csv_path, logger.fig_path
+
+        # Plot the learning curve
+        plot_curve(csv_path, fig_path, "DQN" + str(eachround))
+
+        # Save model
+        save_path = os.path.join(log_dir, 'model' + str(eachround) + '.pth')
+        torch.save(dqn_agent, save_path)
+        print('Model saved in', save_path)
+
 
 def init_search_set(random_search_folder):
     res = set()
-    if os.path.exists(random_search_folder+ "/search_set.txt"):
+    if os.path.exists(random_search_folder + "/search_set.txt"):
         with open(random_search_folder + "/search_set.txt", "r") as f:
             search_set = set(f.read().splitlines())
 
@@ -153,11 +161,12 @@ def init_search_set(random_search_folder):
 
 
 def save_search_set(random_search_folder, args_string):
-    if not os.path.exists(random_search_folder+ "/search_set.txt"):
-        open(random_search_folder+ "/search_set.txt", 'a').close()
+    if not os.path.exists(random_search_folder + "/search_set.txt"):
+        open(random_search_folder + "/search_set.txt", 'a').close()
 
-    with open(random_search_folder+ "/search_set.txt", 'a') as f:
+    with open(random_search_folder + "/search_set.txt", 'a') as f:
         f.write(args_string + "\n")
+
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "cpu"

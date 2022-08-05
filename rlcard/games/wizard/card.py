@@ -100,22 +100,91 @@ class WizardCard:
 
     # def __ne__(self, other) -> bool:
     #     return WizardCard.compare_card_rank(self, other) != 0
+    def get_card_value(self):
+        if self.rank in WizardCard.info["ranks"]:
+            return WizardCard.info["ranks"][self.rank]
 
-    def get_value(self) -> float:
+        if self.rank in WizardCard.info["non_colour_card_ranks"]:
+            return WizardCard.info["non_colour_card_ranks"][self.rank]
+        return 13
+
+    def get_card_forecast_value(self, card, num_players, num_round, top_card, current_position) -> float:
         if self.rank in WizardCard.info["ranks"]:
             return WizardCard.info["ranks"][self.rank]
 
         if self.rank in WizardCard.info["non_colour_card_ranks"]:
             return WizardCard.info["non_colour_card_ranks"][self.rank]
 
-        return 13
+        card_value = 0
 
-    ''' Comparison function for sorting cards 
-        End
-    '''
+        if num_round <= 2:
+            '''in the first round the values are fix due to the position of the player
+            '''
+            if top_card.suit is "n":
+                if current_position is 0:
+
+                    ''' get value through card rank to key for json file first position and num_players top
+                    card narr
+                    '''
+                    return card_value
+                else:
+                    ''' get value through card rank to key for json file second to num_players and three
+                    players top card narr
+                    '''
+                    return card_value
+            elif top_card.suit is "w" and card.suit is not "trump_color":
+                if current_position is 0:
+                    ''' get value through card rank to key for json file first position and num_players top
+                    wizard
+                    '''
+                    return card_value
+                else:
+                    ''' get value through card rank to key for json file second to third position and num_players
+                    top card wizard
+                    '''
+                    return card_value
+
+            else:
+                ''' get value through card rank to key for json file trump color and num_players top card trump
+                color
+                '''
+                return card_value
+
+        else:
+            if top_card.suit is "n":
+                if current_position is 0:
+
+                    ''' get value through card rank to key for json file average and three players top
+                    card narr
+                    '''
+                    return card_value
+                else:
+                    ''' get value through card rank to key for json file average position and three
+                    players top card narr
+                    '''
+                    return card_value
+            elif top_card.suit is "w" and card.suit is not "trump_color":
+                if current_position is 0:
+                    ''' get value through card rank to key for json file average and three players top
+                    wizard
+                    '''
+                    return card_value
+                else:
+                    ''' get value through card rank to key for json file average position and three players
+                    top card wizard
+                    '''
+                    return card_value
+
+            else:
+                ''' get value through card rank to key for json file trump color and three players top card trump
+                color
+                '''
+                return card_value
 
     @staticmethod
     def compare_card_rank(card1, card2) -> int:
+
+        print()
         ''' Compare the rank of two cards
 
         Parameters:
@@ -144,8 +213,13 @@ class WizardCard:
             return WizardCard.info["trump_card_ranks"].index(card1.rank) - WizardCard.info["trump_card_ranks"].index(
                 card2.rank)
         elif card1.suit != "trump_colour" and card2.suit != "trump_colour":
-            return WizardCard.info["colour_ranks"].index(card1.rank) - WizardCard.info["colour_ranks"].index(
+            if card2.suit == card1.suit:
+                print("cardsuit 1: " +card1.suit + ", cardsuit 2: " + card2.suit)
+                return WizardCard.info["colour_ranks"].index(card1.rank) - WizardCard.info["colour_ranks"].index(
                 card2.rank)
+            else:
+                return 1
+
 
         idx_card1 = 0
         if card1.suit == "r":

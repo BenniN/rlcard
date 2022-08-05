@@ -19,7 +19,7 @@ class WizardRound:
         - winner_idx (int): the index of the player that wins the round
     '''
 
-    num_players: int = 4
+    num_players: int = 6
 
     def __init__(self, np_random):
         self.np_random = np_random

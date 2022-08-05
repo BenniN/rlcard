@@ -37,9 +37,9 @@ if __name__ == '__main__':
     wizardEnv = rlcard.make(
         'wizard',
         config={
-            'seed': 42,
+            'seed': None,
             'game_num_players': 3,
-            'game_num_rounds': 4
+            'game_num_rounds': 5
         }
     )
 
@@ -48,6 +48,8 @@ if __name__ == '__main__':
     human_agent = HumanAgent(num_actions=wizardEnv.num_actions)
     # dqn_agent = load_model(
     #     "final_models/dqn_wizard_player_0/model_round20.pth", wizardEnv, 0, device)
+    human_agent1 = HumanAgent(num_actions=wizardEnv.num_actions)
+    human_agent2 = HumanAgent(num_actions=wizardEnv.num_actions)
     random1 = RandomAgent(num_actions=wizardEnv.num_actions)
     random2 = RandomAgent(num_actions=wizardEnv.num_actions)
 

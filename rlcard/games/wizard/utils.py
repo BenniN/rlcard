@@ -48,7 +48,7 @@ def cards2value(cards) -> float:
 
     value = 0
     for card in cards:
-        value += card.get_value()
+        value += card.get_card_value()
 
     return value
 
@@ -158,6 +158,8 @@ def encode_observation_var0(state, num_players=4):
             [366-371] Card played position for trick
             [372-377] player who wins current round
             [378-383] color
+            [384-385]
+            [384-404]
         '''
 
     obs = np.zeros((384), dtype=int)
@@ -196,27 +198,66 @@ def encode_observation_var0(state, num_players=4):
 
 def encode_observation_perfect_information(state, is_raeuber=False):
     ''' the shape of this encoding is (498)
-
     Parameters:
         - state (dict): the state of the game
-
     Returns:
         - obs (list): the observation
-
     Observation Representation
-        - [0-59] cards player 0
-        - [60-119] cards player 1
-        - [120-179] cards player 2
-        - [180-239] cards player 3
-        - [240-299] cards player 4
-        - [300-359] cards player 5
-        - [360-419] winner of trick
-        - [420-479]
-        - ....
-
+        - [0-53] cards player 0
+        - [54-107] cards player 1
+        - [108-161] cards player 2
+        - [162-215] cards player 3
+        - [216-269] out_of_game_cards
+        - [270-323] winner of trick
+        - [324-377] first trick card
+        - [378-431] second trick card
+        - [432-485] third trick card
+        - [486-497] Game Information
+            - [486-489]: who is part of the team
+            - [490-493]: who wins the current round
+            - [494-497]: player who started the trick round
     '''
+    obs = np.zeros((498), dtype=int)
+
+    for i in range(len(state['hand_cards'])):
+        hand_cards_idx = [i*54 + ACTION_SPACE[card]
+                          for card in state['hand_cards'][i]]
+        obs[hand_cards_idx] = 1
+
+    known_cards_idxs = get_known_cards(
+        None, state['valued_cards'], state['played_tricks'], state['trick'], 216)
+
+    obs[known_cards_idxs] = 1
+
+    if state['winner_card'] != 'None':
+        obs[270 + ACTION_SPACE[state['winner_card']]] = 1
+
+    for i in range(len(state["trick"])):
+        obs[324 + (i*54) + ACTION_SPACE[state["trick"][i]]] = 1
+
+    encode_obs_game_info(state, obs, 486, is_raeuber)
+
+    return obs
 
 
+def encode_obs_game_info(state, obs, start_idx, is_raeuber):
+    winner_idx = state['winner']
+    start_player_idx = state['start_player']
+    current_player_idx = state['current_player']
+
+    if is_raeuber:
+        obs[start_idx+current_player_idx] = 1
+    else:
+        if current_player_idx == 0:
+            obs[start_idx] = 1
+        else:
+            obs[[start_idx+1, start_idx+2, start_idx+3]] = 1
+
+    if winner_idx != None:
+        obs[start_idx+4 + winner_idx] = 1
+
+    if start_player_idx != None:
+        obs[start_idx+8+start_player_idx] = 1
 
 def map_color_to_index(color) -> str:
     ''' Map the suit to a color
@@ -362,7 +403,10 @@ def compare_trick_winner(winner_card, compare_to_card, top_card=None) -> int:
     if not ignore_trump_color and winner_card.suit == trump_color and compare_to_card.suit == trump_color:
         return int(winner_card.rank) - int(compare_to_card.rank)
     if winner_card.suit != trump_color and compare_to_card.suit != trump_color:
-        return int(winner_card.rank) - int(compare_to_card.rank)
+        if winner_card.suit == compare_to_card.suit:
+            return int(winner_card.rank) - int(compare_to_card.rank)
+        else:
+            return 1
 
     if (winner_card.suit == "w" and compare_to_card.suit != "w") or (winner_card.suit == "w" and compare_to_card.suit == "w"):
         return 1

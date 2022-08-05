@@ -21,25 +21,25 @@ from rlcard.utils import (
 # nfsp_poinr_var_0_tuned_dqn/model_12
 args = {
     "algorithm": "nfsp",
-    "_log_dir": "final_models/nfsp_wizard_player_2",
+    "_log_dir": "final_models/nfsp_changed_args_bigger_test_small_learning",
     "_env_name": "wizard",
     "_game_judge_by_points": 0,
     "_num_cards": 60,
     "_num_players": 3,
-    "_seed": 42,
-    "_hidden_layers_sizes": [64, 64],
-    "_reservoir_buffer_capacity": 20000,
-    "_anticipatory_param": 0.1,
-    "_batch_size": 256,
+    "_seed": 20,
+    "_hidden_layers_sizes": [512, 512],
+    "_reservoir_buffer_capacity": 100000,
+    "_anticipatory_param": 0.5,
+    "_batch_size": 32,
     "_train_every": 1,
-    "_rl_learning_rate": 5e-06,
-    "_sl_learning_rate": 0.001,
+    "_rl_learning_rate": 1e-05,
+    "_sl_learning_rate": 0.0001,
     "_min_buffer_size_to_learn": 100,
-    "_q_replay_memory_size": 200000,
+    "_q_replay_memory_size": 100000,
     "_q_replay_memory_init_size": 100,
-    "_q_update_target_estimator_every": 1000,
-    "_q_discount_factor": 0.99,
-    "_q_epsilon_start": 1.0,
+    "_q_update_target_estimator_every": 10000,
+    "_q_discount_factor": 0.95,
+    "_q_epsilon_start": 1,
     "_q_epsilon_end": 0.1,
     "_q_epsilon_decay_steps": 100000,
     "_q_batch_size": 32,
@@ -47,7 +47,8 @@ args = {
     "_q_mlp_layer": [512, 512],
     "_num_eval_games": 1000,
     "_num_episodes": 100000,
-    "_evaluate_every": 1000
+    "_evaluate_every": 1000,
+    # "save_model_every": 5000,
 }
 
 
@@ -57,7 +58,7 @@ def train(algorithm, _log_dir, _env_name, _game_judge_by_points, _seed, _num_car
           _q_update_target_estimator_every, _q_discount_factor, _q_epsilon_start, _q_epsilon_end,
           _q_epsilon_decay_steps, _q_batch_size, _q_train_every,
           _q_mlp_layer, _num_eval_games=10000, _num_episodes=1000,
-          _evaluate_every=100):
+          _evaluate_every=100, save_model_every=5000):
     # Check whether gpu is available
     device = get_device()
 

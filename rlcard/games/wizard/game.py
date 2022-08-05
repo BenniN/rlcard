@@ -41,7 +41,7 @@ class WizardGame():
 
         self.allow_step_back: bool = allow_step_back
         self.np_random: np.random.RandomState = np.random.RandomState()
-        self.num_players: int = 4  # there could be 3 to 6 players
+        self.num_players: int = 6  # there could be 3 to 6 players
         self.points: list[int] = [0 for _ in range(self.num_players)]
         self.max_num_rounds = self.num_actions / self.num_players
 

@@ -24,7 +24,7 @@ args = {
     # "algorithm": "nfsp",
     # "log_dir": "final_models/nfsp_wizard_player_1",
     "algorithm": "dqn",
-    "log_dir": "final_models/dqn_wizard_best_params_three_players",
+    "log_dir": "final_models/dqn_5e07_mil_seed42",
     "env_name": "wizard",
     "game_judge_by_points": 0,
     "num_cards": 60,
@@ -41,7 +41,7 @@ args = {
     "num_eval_games": 1000,
     "num_episodes": 1000000,
     "evaluate_every": 1000,
-    "learning_rate": 5e-06,  # 1*10^-5 oder 0.00001
+    "learning_rate": 5e-07,  # 1*10^-5 oder 0.00001 5e-06
 }
 
 
