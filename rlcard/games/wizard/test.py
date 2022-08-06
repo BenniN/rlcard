@@ -38,7 +38,7 @@ if __name__ == '__main__':
         'wizard',
         config={
             'seed': None,
-            'game_num_players': 3,
+            'game_num_players': 6,
             'game_num_rounds': 5
         }
     )
