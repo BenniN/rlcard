@@ -4,7 +4,7 @@ from collections import OrderedDict
 from rlcard.games.wizard.game import WizardGame
 from rlcard.envs import Env
 from rlcard.games.wizard.utils import ACTION_LIST, ACTION_SPACE
-from rlcard.games.wizard.utils import cards2list, encode_observation_var0, encode_observation_perfect_information
+from rlcard.games.wizard.utils import cards2list, encode_observation_var0, encode_observation_var1, encode_observation_perfect_information
 
 DEFAULT_GAME_CONFIG = {
     'game_num_players': 6,
@@ -13,7 +13,8 @@ DEFAULT_GAME_CONFIG = {
     'game_num_rounds': 1,
     'game_with_perfect_information': False,
     'game_train_players': [False, False, False, False],
-    'game_analysis_mode': False
+    'game_analysis_mode': False,
+    'game_anticipate_max_param': 0.5
 }
 
 
@@ -58,11 +59,11 @@ class WizardEnv(Env):
             # Agent plays
             if is_training:
                 if not self.game_train_players[player_id]:
-                        # print("state:", state)
-                        action, _ = self.agents[player_id].eval_step(state)
+                    # print("state:", state)
+                    action, _ = self.agents[player_id].eval_step(state)
                 else:
-                        # print("state:", state)
-                        action = self.agents[player_id].step(state)
+                    # print("state:", state)
+                    action = self.agents[player_id].step(state)
             else:
                 # print("state:", state)
                 action, _ = self.agents[player_id].eval_step(state)
@@ -106,7 +107,7 @@ class WizardEnv(Env):
 
         # perfect_info_state = self.get_perfect_information()
 
-        extracted_state['obs'] = encode_observation_var0(
+        extracted_state['obs'] = encode_observation_var1(
             state,
         )
         # setup extracted state

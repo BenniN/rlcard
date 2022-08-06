@@ -38,22 +38,20 @@ if __name__ == '__main__':
         'wizard',
         config={
             'seed': None,
-            'game_num_players': 6,
-            'game_num_rounds': 5
+            'game_num_players': 3,
+            'game_num_rounds': 5,
+            'game_anticipate_max_param': 0.5
         }
     )
 
     device = get_device()
 
-    human_agent = HumanAgent(num_actions=wizardEnv.num_actions)
-    # dqn_agent = load_model(
-    #     "final_models/dqn_wizard_player_0/model_round20.pth", wizardEnv, 0, device)
-    human_agent1 = HumanAgent(num_actions=wizardEnv.num_actions)
-    human_agent2 = HumanAgent(num_actions=wizardEnv.num_actions)
-    random1 = RandomAgent(num_actions=wizardEnv.num_actions)
-    random2 = RandomAgent(num_actions=wizardEnv.num_actions)
+    env_agents = []
+    env_agents.append(HumanAgent(num_actions=wizardEnv.num_actions))
+    for _ in range(1, wizardEnv.num_players):
+        env_agents.append(RandomAgent(num_actions=wizardEnv.num_actions))
 
-    wizardEnv.set_agents([human_agent, random1, random2])
+    wizardEnv.set_agents(env_agents)
 
     trajectories, payoffs = wizardEnv.run(is_training=False)
     print("Trajectory", trajectories[-1][-1])
