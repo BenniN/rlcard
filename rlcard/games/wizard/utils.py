@@ -428,7 +428,7 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
             return card_value
 
     else:
-        if top_card.suit == "n" or top_card.suit == None:
+        if top_card is None or top_card.suit == "n":
             action_space_max = forecast_dict[path]['first_position_no_trumpcolor']['action_space']
             action_space_min = forecast_dict[path]['average_position_no_trumpcolor']['action_space']
 

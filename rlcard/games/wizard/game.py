@@ -101,7 +101,9 @@ class WizardGame():
 
         colors = ['r', 'g', 'b', 'y']
 
-        if self.top_card.suit == "w":
+        if self.top_card is None:
+            self.top_card = None
+        elif self.top_card.suit == "w":
             self.trump_color = colors[random.randint(0, 3)]
         else:
             self.trump_color = self.top_card.suit
@@ -111,8 +113,9 @@ class WizardGame():
 
         for i in range(self.num_players):
             relative_player_pos = (i - self.current_player) % self.num_players
-            self.players[i].forecast = round(get_hand_forecast_value(self.anticipate_max_param, self.players[i].hand, self.num_players,
-                                                                     self.max_num_rounds, self.top_card, self.trump_color, relative_player_pos))
+            self.players[i].forecast = round(
+                get_hand_forecast_value(self.anticipate_max_param, self.players[i].hand, self.num_players,
+                                        self.max_num_rounds, self.top_card, self.trump_color, relative_player_pos))
             print('forecast_player_' + str(i) + ':', self.players[i].forecast)
 
         self.round = Round(self.np_random)
@@ -195,15 +198,15 @@ class WizardGame():
     def step_back(self) -> bool:
         if len(self.history) > 0:
             self.round, self.players, self.dealer, \
-                self.round_counter, self.trick_history, self.points, \
-                self.last_round_winner_idx, self.trick_winner_card_history = self.history.pop()
+            self.round_counter, self.trick_history, self.points, \
+            self.last_round_winner_idx, self.trick_winner_card_history = self.history.pop()
             return True
         return False
 
     def get_num_players(self) -> int:
         return self.num_players
 
-    @ staticmethod
+    @staticmethod
     def get_num_actions() -> int:
         return WizardGame.num_actions
 

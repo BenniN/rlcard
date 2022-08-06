@@ -15,10 +15,10 @@ args = {
                 "final_models/dqn_5e07_mil_seed42/model_round_20.pth",
                 "random"],
     "_env_name": "wizard",
-    "_game_judge_by_points": 0,
     "_num_cards": 60,
     "_num_players": 3,
     "_num_games": 10000,
+    "_num_rounds": 20,
 }
 
 
@@ -34,7 +34,7 @@ def load_model(model_path, env=None, position=None, device=None):
     return agent
 
 
-def evaluate(_seed, _models, _env_name, _game_judge_by_points, _num_games, _num_players, _num_cards):
+def evaluate(_seed, _models, _env_name, _num_games, _num_players, _num_cards, _num_rounds):
 
     # Check whether gpu is available
     device = get_device()
@@ -42,7 +42,7 @@ def evaluate(_seed, _models, _env_name, _game_judge_by_points, _num_games, _num_
     # Seed numpy, torch, random
     set_seed(_seed)
 
-    all_rewards= []
+    all_rewards = []
 
     max_rounds = int(_num_cards / _num_players)
     # rounds_to_evaluate = [7]
@@ -55,11 +55,11 @@ def evaluate(_seed, _models, _env_name, _game_judge_by_points, _num_games, _num_
             _env_name,
             config={
                 'seed': _seed,
-                'game_judge_by_points': _game_judge_by_points,
-                'num_cards': _num_cards,
-                'num_players:': _num_players
+                'game_num_players': _num_players,
+                'game_num_rounds': eachround
             }
         )
+
 
         # Load models
         agents = []
