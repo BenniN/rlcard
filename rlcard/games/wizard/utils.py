@@ -19,6 +19,36 @@ with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/action_space.json'), 'r
     ACTION_LIST = list(ACTION_SPACE.keys())
 
 
+def init_forecast_dict():
+    result = {}
+
+    player_num_folder_list = ['three_players',
+                              'four_players', 'five_players', 'six_players']
+
+    forecast_file_dict = [
+        'first_position',
+        'average_position',
+        'average_position_no_trumpcolor',
+        'first_position_no_trumpcolor',
+        'trumpcolor'
+    ]
+
+    for folder in player_num_folder_list:
+        result[folder] = {}
+        for file in forecast_file_dict:
+            with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + folder + '/' + folder + '_' + file + '.json'), 'r') as current_file:
+                action_space = json.load(
+                    current_file, object_pairs_hook=OrderedDict)
+                action_list = list(ACTION_SPACE.keys())
+            result[folder][file] = {}
+            result[folder][file]['action_space'] = action_space
+
+    return result
+
+
+forecast_dict = init_forecast_dict()
+
+
 def init_deck() -> list:
     ''' initialize the wizard deck'''
 
@@ -195,6 +225,7 @@ def encode_observation_var0(state):
 
     return obs
 
+
 def encode_observation_var1(state):
     ''' the shape of this encoding is (405)
 
@@ -205,55 +236,53 @@ def encode_observation_var1(state):
         - obs (list): the observation
 
     Observation Representation
-        - [0-19] predicted amount of cards to win
-        - [20-79] own cards
-        - [80-139] top card
-        - [140-199] target card
-        - [200-259] cards playable by other players
-        - [260-219] winner of trick
-        - [320-379] cards in trick
-        - [380-405] Game Information
-            [380-385] Player who started round
-            [386-391] Card played position for trick
-            [392-397] player who wins current round
-            [398-403] color
-            [404-405] higher or lower than average prediction
-            [406-425] min max forecast
+        - [0] predicted amount of cards to win
+        - [1-60] own cards
+        - [61-120] top card
+        - [121-180] target card
+        - [181-240] cards playable by other players
+        - [241-300] winner of trick
+        - [301-360] cards in trick
+        - [361-369] Game Information
+            [361] Player who started round
+            [362] Card played position for trick
+            [363] player who wins current round
+            [364-369] color
         '''
 
-    obs = np.zeros((405), dtype=int)
+    obs = np.zeros((370), dtype=int)
 
-    hand_cards_idx = [ACTION_SPACE[card] for card in state['hand']]
+    obs[0] = state['current_player_forecast']
+    hand_cards_idx = [1 + ACTION_SPACE[card] for card in state['hand']]
     obs[hand_cards_idx] = 1
 
     top_card_id = None
     if state['top_card'] != 'None':
-        top_card_id = 80 + ACTION_SPACE[state['top_card']]
+        top_card_id = 61 + ACTION_SPACE[state['top_card']]
         obs[top_card_id] = 1
 
     target_card_id = None
     if state['target_card'] != 'None':
-        target_card_id = 140 + ACTION_SPACE[state['target_card']]
+        target_card_id = 121 + ACTION_SPACE[state['target_card']]
         obs[target_card_id] = 1
 
     known_card_ids = get_known_cards(
-        state['hand'], state['top_card'], state['tricks_played'], state['current_trick'], 200)
-    obs[range(200, 260)] = 1
+        state['hand'], state['top_card'], state['tricks_played'], state['current_trick'], 181)
+    obs[range(181, 241)] = 1
     obs[known_card_ids] = 0
 
     winner_card_id = None
     if state['winner_card'] != 'None':
-        winner_card_id = 260 + ACTION_SPACE[state['winner_card']]
+        winner_card_id = 241 + ACTION_SPACE[state['winner_card']]
         obs[winner_card_id] = 1
 
-    current_trick_card_ids = [320 + ACTION_SPACE[card]
+    current_trick_card_ids = [301 + ACTION_SPACE[card]
                               for card in state['current_trick']]
     obs[current_trick_card_ids] = 1
 
-    encode_obs_game_info(state, obs, 380)
+    encode_obs_game_info_forecast(state, obs, 361)
 
     return obs
-
 
 
 def encode_observation_perfect_information(state):
@@ -310,138 +339,126 @@ def encode_observation_perfect_information(state):
     return obs
 
 
-def encode_obs_game_info(state, obs, start_idx, is_raeuber):
-    winner_idx = state['winner']
-    start_player_idx = state['start_player']
-    current_player_idx = state['current_player']
+def get_hand_forecast_value(anticipate_max_param, hand, num_players, num_round, top_card, trump_color, current_position):
+    hand_value = 0
+    for card in hand:
+        current_value = get_card_forecast_value(
+            anticipate_max_param, card, num_players, num_round, top_card, trump_color, current_position)
+        hand_value += current_value
+        print(str(card), current_value)
 
-    if is_raeuber:
-        obs[start_idx+current_player_idx] = 1
+    print("hand_value", hand_value)
+    return hand_value
+
+
+def card_rank_to_value(card, action_space):
+    if card.suit == "n":
+        card_value = action_space["14"]/100
+    elif card.suit == "w":
+        card_value = action_space["15"]/100
     else:
-        if current_player_idx == 0:
-            obs[start_idx] = 1
-        else:
-            obs[[start_idx+1, start_idx+2, start_idx+3]] = 1
-
-    if winner_idx != None:
-        obs[start_idx+4 + winner_idx] = 1
-
-    if start_player_idx != None:
-        obs[start_idx+8+start_player_idx] = 1
+        card_value = action_space[str(card.rank)]/100
+    return card_value
 
 
-def get_card_forecast_value(card, num_players, num_round, top_card, current_position) -> float:
+def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, top_card, trump_color, current_position) -> float:
+    """
+        anticipate_max_param: 0 <= x <= 1
+            x=1 : weighting towards extrem(max) postion.
+    """
 
-        if num_players == 3:
-            path = "three_players"
-        elif num_players == 4:
-            path = "four_players"
-        elif num_players == 5:
-            path = "five_players"
-        elif num_players == 6:
-            path = "six_players"
+    if num_players == 3:
+        path = "three_players"
+    elif num_players == 4:
+        path = "four_players"
+    elif num_players == 5:
+        path = "five_players"
+    elif num_players == 6:
+        path = "six_players"
 
-        card_value = 0
+    card_value = 0
 
-        if num_round <= 2:
-            '''in the first round the values are fix due to the position of the player
+    if num_round < 2:
+        '''in the first round the values are fix due to the position of the player
+        '''
+        if top_card.suit == "n":
+            if current_position == 0:
+
+                action_space = forecast_dict[path]['first_position_no_trumpcolor']['action_space']
+                card_value = card_rank_to_value(card, action_space)
+
+                return card_value
+            else:
+                ''' get value through card rank to key for json file second to num_players and three
+                players top card narr
+                '''
+
+                action_space = forecast_dict[path]['average_position_no_trumpcolor']['action_space']
+                card_value = card_rank_to_value(card, action_space)
+
+                return card_value
+
+        # top_card.suit is "w" and card.suit is not "trump_color":
+        elif card.suit != trump_color:
+            if current_position == 0:
+                ''' get value through card rank to key for json file first position and num_players top
+                wizard
+                '''
+                action_space = forecast_dict[path]['first_position']['action_space']
+                card_value = card_rank_to_value(card, action_space)
+
+                return card_value
+            else:
+                ''' get value through card rank to key for json file second to third position and num_players
+                top card wizard
+                '''
+
+                action_space = forecast_dict[path]['average_position']['action_space']
+                card_value = card_rank_to_value(card, action_space)
+
+                return card_value
+
+        elif card.suit == trump_color:
+            ''' get value through card rank to key for json file trump color and num_players top card trump
+            color
             '''
-            if top_card.suit == "n" or top_card == None:
-                if current_position is 0:
+            action_space = forecast_dict[path]['trumpcolor']['action_space']
+            card_value = card_rank_to_value(card, action_space)
 
-                    ''' get value through card rank to key for json file first position and num_players top
-                                        card narr
-                                        '''
+            return card_value
 
-                    with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + path + '/' + path + '_first_position_no_trumpcolor.json'), 'r') as current_file:
-                        ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                        ACTION_LIST = list(ACTION_SPACE.keys())
+    else:
+        if top_card.suit == "n" or top_card.suit == None:
+            action_space_max = forecast_dict[path]['first_position_no_trumpcolor']['action_space']
+            action_space_min = forecast_dict[path]['average_position_no_trumpcolor']['action_space']
 
+            card_value = card_rank_to_value(card, action_space_max) * anticipate_max_param + \
+                card_rank_to_value(card, action_space_min) * \
+                (1-anticipate_max_param)
 
-                    return card_value
-                else:
-                    ''' get value through card rank to key for json file second to num_players and three
-                    players top card narr
-                    '''
-                    with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + path + '/' + path + '_average_position_no_trumpcolor.json'), 'r') as current_file:
-                        ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                        ACTION_LIST = list(ACTION_SPACE.keys())
+            return card_value
 
-                    return card_value
+        # top_card.suit is "w" and card.suit is not "trump_color":
+        elif card.suit != trump_color:
+            action_space_max = forecast_dict[path]['first_position']['action_space']
+            action_space_min = forecast_dict[path]['average_position']['action_space']
 
-            elif card.suit != "trump_color": # top_card.suit is "w" and card.suit is not "trump_color":
-                if current_position is 0:
-                    ''' get value through card rank to key for json file first position and num_players top
-                    wizard
-                    '''
-                    with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + path + '/' + path + '_first_position.json'), 'r') as current_file:
-                        ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                        ACTION_LIST = list(ACTION_SPACE.keys())
-                    return card_value
-                else:
-                    ''' get value through card rank to key for json file second to third position and num_players
-                    top card wizard
-                    '''
+            card_value = card_rank_to_value(card, action_space_max) * anticipate_max_param + \
+                card_rank_to_value(card, action_space_min) * \
+                (1-anticipate_max_param)
 
-                    with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + path + '/' + path + '_average_position.json'), 'r') as current_file:
-                        ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                        ACTION_LIST = list(ACTION_SPACE.keys())
+            return card_value
 
-                    return card_value
+        elif card.suit == trump_color:
+            ''' get value through card rank to key for json file trump color and num_players top card trump
+            color
+            '''
 
-            elif card.suit == top_card.suit:
-                ''' get value through card rank to key for json file trump color and num_players top card trump
-                color
-                '''
+            action_space = forecast_dict[path]['trumpcolor']['action_space']
 
-                with open(os.path.join(ROOT_PATH,
-                                       'games/wizard/jsondata/' + path + '/' + path + '_trumpcolor.json'),
-                          'r') as current_file:
-                    ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                    ACTION_LIST = list(ACTION_SPACE.keys())
+            card_value = card_rank_to_value(card, action_space)
 
-                return card_value
-
-        else:
-            if top_card.suit == "n" or top_card.suit == None:
-                with open(os.path.join(ROOT_PATH,
-                                       'games/wizard/jsondata/' + path + '/' + path + '_first_position_no_trumpcolor.json'),
-                          'r') as current_file:
-                    ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                    ACTION_LIST = list(ACTION_SPACE.keys())
-
-                with open(os.path.join(ROOT_PATH,
-                                       'games/wizard/jsondata/' + path + '/' + path + '_average_position_no_trumpcolor.json'),
-                          'r') as current_file:
-                    ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                    ACTION_LIST = list(ACTION_SPACE.keys())
-
-                return card_value
-
-            elif card.suit != "trump_color":#top_card.suit is "w" and card.suit is not "trump_color":
-                    with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + path + '/' + path + '_first_position.json'), 'r') as current_file:
-                        ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                        ACTION_LIST = list(ACTION_SPACE.keys())
-
-                    with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + path + '/' + path + '_average_position.json'), 'r') as current_file:
-                        ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                        ACTION_LIST = list(ACTION_SPACE.keys())
-
-                    return card_value
-
-
-            elif card.suit == top_card.suit:
-                ''' get value through card rank to key for json file trump color and num_players top card trump
-                color
-                '''
-
-                with open(os.path.join(ROOT_PATH,
-                                       'games/wizard/jsondata/' + path + '/' + path + '_trumpcolor.json'),
-                          'r') as current_file:
-                    ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
-                    ACTION_LIST = list(ACTION_SPACE.keys())
-
-                return card_value
+            return card_value
 
 
 def map_color_to_index(color) -> str:
@@ -481,6 +498,24 @@ def encode_obs_game_info(state, obs, start_idx):
 
     if round_color is not None and round_color != 'Invalid suit':
         obs[start_idx+18+round_color] = 1
+
+
+def encode_obs_game_info_forecast(state, obs, start_idx):
+    winner_idx = state['winner']
+    start_player_idx = state['start_player']
+    current_player_idx = state['current_player']
+    round_color = map_color_to_index(state['round_color'])
+
+    obs[start_idx] = start_player_idx
+
+    if winner_idx is not None:
+        obs[start_idx+1] = winner_idx
+
+    if current_player_idx is not None:
+        obs[start_idx + 2] = current_player_idx
+
+    if round_color is not None and round_color != 'Invalid suit':
+        obs[start_idx+3+round_color] = 1
 
 
 def save_args_params(args):
@@ -558,7 +593,7 @@ def load_model(model_path, env=None, position=None, device=None):
     return agent
 
 
-def compare_trick_winner(winner_card, compare_to_card, top_card=None) -> int:
+def compare_trick_winner(winner_card, compare_to_card, top_card, trump_color) -> int:
     ''' Compare the winner of a trick
 
     Parameters:
@@ -572,14 +607,19 @@ def compare_trick_winner(winner_card, compare_to_card, top_card=None) -> int:
         ignore_trump_color = True
 
     else:
-        trump_color = top_card.suit
         if trump_color == "n":
             ignore_trump_color = True
 
-        colors = ['r', 'g', 'b', 'y']
-
-        if trump_color == "w":
-            trump_color = colors[random.randint(0, 3)]  # select random color
+    if (winner_card.suit == "w" and compare_to_card.suit != "w") or (winner_card.suit == "w" and compare_to_card.suit == "w"):
+        return 1
+    if winner_card.suit != "w" and compare_to_card.suit == "w":
+        return -1
+    if winner_card.suit == "n" and compare_to_card.suit != "n":
+        return -1
+    if winner_card.suit != "n" and compare_to_card.suit == "n":
+        return 1
+    if winner_card.suit == "n" and compare_to_card.suit == "n":
+        return 1
 
     if not ignore_trump_color and winner_card.suit != trump_color and compare_to_card.suit == trump_color:
         return -1
@@ -592,14 +632,3 @@ def compare_trick_winner(winner_card, compare_to_card, top_card=None) -> int:
             return int(winner_card.rank) - int(compare_to_card.rank)
         else:
             return 1
-
-    if (winner_card.suit == "w" and compare_to_card.suit != "w") or (winner_card.suit == "w" and compare_to_card.suit == "w"):
-        return 1
-    if winner_card.suit != "w" and compare_to_card.suit == "w":
-        return -1
-    if winner_card.suit == "n" and compare_to_card.suit != "n":
-        return -1
-    if winner_card.suit != "n" and compare_to_card.suit == "n":
-        return 1
-    if winner_card.suit == "n" and compare_to_card.suit == "n":
-        return 1
