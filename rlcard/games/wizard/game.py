@@ -4,7 +4,7 @@ import numpy as np
 from typing import Any
 
 from abc import ABC
-from rlcard.games.wizard.utils import cards2list
+from rlcard.games.wizard.utils import cards2list, get_hand_forecast_value
 from rlcard.games.wizard import Dealer
 from rlcard.games.wizard import Judger
 from rlcard.games.wizard import Round
@@ -58,6 +58,8 @@ class WizardGame():
         self.forcast_player_amount: int = None
         self.forcast_predicted_cards: int = None
         self.judge_by_points: int = 0
+        self.anticipate_max_param: float = 0.5
+        self.trump_color = None
 
     def configure(self, game_config) -> None:
         ''' Specify some game specific parameters, such as number of players
@@ -73,6 +75,7 @@ class WizardGame():
         self.points: list[int] = [0 for _ in range(self.num_players)]
         self.with_perfect_information = game_config['game_with_perfect_information']
         self.analysis_mode = game_config['game_analysis_mode']
+        self.anticipate_max_param = game_config['game_anticipate_max_param']
 
     def init_game(self) -> tuple[dict, Any]:
         self.points = [0 for _ in range(self.num_players)]
@@ -96,12 +99,25 @@ class WizardGame():
 
         self.top_card = self.dealer.flip_top_card()
 
+        colors = ['r', 'g', 'b', 'y']
+
+        if self.top_card.suit == "w":
+            self.trump_color = colors[random.randint(0, 3)]
+        else:
+            self.trump_color = self.top_card.suit
+
         # player starts the game
         self.current_player = self.np_random.randint(0, self.num_players - 1)
 
+        for i in range(self.num_players):
+            relative_player_pos = (i - self.current_player) % self.num_players
+            self.players[i].forecast = round(get_hand_forecast_value(self.anticipate_max_param, self.players[i].hand, self.num_players,
+                                                                     self.max_num_rounds, self.top_card, self.trump_color, relative_player_pos))
+            print('forecast_player_' + str(i) + ':', self.players[i].forecast)
+
         self.round = Round(self.np_random)
         self.round.start_new_round(
-            self.current_player, self.num_players, self.top_card)
+            self.current_player, self.num_players, self.top_card, self.trump_color)
 
         state = self.get_state(self.current_player)
 
@@ -122,6 +138,7 @@ class WizardGame():
         state = self.round.get_state(self.players[player_id])
         state['num_players'] = self.get_num_players()
         state['current_player'] = self.round.current_player_idx
+        state['current_player_forecast'] = self.players[player_id].forecast
         state['current_trick_round'] = self.round_counter
         state['tricks_played'] = self.trick_history
         state['last_round_winner'] = self.last_round_winner_idx
@@ -168,39 +185,7 @@ class WizardGame():
                 self.points, self.round.points)
             self.round_counter += 1
             self.round.start_new_round(self.last_round_winner_idx,
-                                       self.num_players, self.top_card)
-
-        # if self.round.is_over:
-        #     self.trick_history.append(cards2list(self.round.trick.copy()))
-        #     self.last_round_winner_idx = self.round.winner_idx
-        #     self.points = self.judger.receive_points(
-        #         self.points, self.round.points)
-        #     self.round_counter += 1
-        #     new_player_id = (self.round.starting_player_idx +
-        #                      1) % self.num_players
-        #     self.dealer = Dealer(self.np_random)
-
-        #     self.trick_history = []
-
-        #     if self.round_counter == self.max_num_rounds:
-        #         self.top_card = None
-        #     else:
-        #         self.top_card = self.dealer.flip_top_card()
-
-        #     self.start_new_round(
-        #         new_player_id, self.num_players, self.round_counter, self.top_card)
-
-        # if self.round.is_over:
-        #     self.trick_history.append(cards2list(self.round.trick.copy()))
-        #     self.last_round_winner_idx = self.round.winner_idx
-        #     self.points = self.judger.receive_points(
-        #         self.points,
-        #         self.players,
-        #         self.last_round_winner_idx,
-        #         self.round.trick.copy()
-        #     )
-        #     self.round.start_new_round(self.last_round_winner_idx)
-        #     self.round_counter += 1
+                                       self.num_players, self.top_card, self.trump_color)
 
         player_id = self.round.current_player_idx
         state = self.get_state(player_id)
@@ -218,7 +203,7 @@ class WizardGame():
     def get_num_players(self) -> int:
         return self.num_players
 
-    @staticmethod
+    @ staticmethod
     def get_num_actions() -> int:
         return WizardGame.num_actions
 
@@ -229,7 +214,10 @@ class WizardGame():
         return self.round_counter > self.max_num_rounds
 
     def get_payoffs(self) -> list:
-        return self.points
+        forecasts = [
+            self.players[i].forecast for i in range(len(self.players))]
+
+        return self.judger.judge_game_var2(self.points, forecasts)
 
     def get_legal_actions(self) -> list:
         return self.round.get_legal_actions(self.players[self.round.current_player_idx])
