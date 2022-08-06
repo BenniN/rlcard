@@ -29,15 +29,14 @@ class WizardJudger:
         else:
             return [-1, 1, 1, 1]
 
-
     def judge_game_var2(self, points, player_forecasts) -> list:
         result = [0 for _ in range(len(points))]
 
         for i in range(len(points)):
             if points[i] == player_forecasts[i]:
-                result[i] = points[i]+2
+                result[i] = points[i] + 2
             else:
-                result[i] = - abs(player_forecasts[i]-points[i])
+                result[i] = - abs(player_forecasts[i] - points[i])
         print("tricks", points)
 
         return result
