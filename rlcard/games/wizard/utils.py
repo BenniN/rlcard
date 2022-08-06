@@ -329,7 +329,8 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber):
     if start_player_idx != None:
         obs[start_idx+8+start_player_idx] = 1
 
-    def get_card_forecast_value(self, card, num_players, num_round, top_card, current_position) -> float:
+
+def get_card_forecast_value(card, num_players, num_round, top_card, current_position) -> float:
 
         if num_players == 3:
             path = "three_players"
@@ -345,7 +346,7 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber):
         if num_round <= 2:
             '''in the first round the values are fix due to the position of the player
             '''
-            if top_card.suit is "n" or top_card is None:
+            if top_card.suit == "n" or top_card == None:
                 if current_position is 0:
 
                     ''' get value through card rank to key for json file first position and num_players top
@@ -368,7 +369,7 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber):
 
                     return card_value
 
-            elif card.suit is not "trump_color": # top_card.suit is "w" and card.suit is not "trump_color":
+            elif card.suit != "trump_color": # top_card.suit is "w" and card.suit is not "trump_color":
                 if current_position is 0:
                     ''' get value through card rank to key for json file first position and num_players top
                     wizard
@@ -388,7 +389,7 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber):
 
                     return card_value
 
-            elif card.suit is top_card.suit:
+            elif card.suit == top_card.suit:
                 ''' get value through card rank to key for json file trump color and num_players top card trump
                 color
                 '''
@@ -402,7 +403,7 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber):
                 return card_value
 
         else:
-            if top_card.suit is "n" or top_card.suit is None:
+            if top_card.suit == "n" or top_card.suit == None:
                 with open(os.path.join(ROOT_PATH,
                                        'games/wizard/jsondata/' + path + '/' + path + '_first_position_no_trumpcolor.json'),
                           'r') as current_file:
@@ -417,7 +418,7 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber):
 
                 return card_value
 
-            elif card.suit is not "trump_color":#top_card.suit is "w" and card.suit is not "trump_color":
+            elif card.suit != "trump_color":#top_card.suit is "w" and card.suit is not "trump_color":
                     with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + path + '/' + path + '_first_position.json'), 'r') as current_file:
                         ACTION_SPACE = json.load(current_file, object_pairs_hook=OrderedDict)
                         ACTION_LIST = list(ACTION_SPACE.keys())
@@ -429,7 +430,7 @@ def encode_obs_game_info(state, obs, start_idx, is_raeuber):
                     return card_value
 
 
-            elif card.suit is top_card.suit:
+            elif card.suit == top_card.suit:
                 ''' get value through card rank to key for json file trump color and num_players top card trump
                 color
                 '''
