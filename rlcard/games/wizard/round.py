@@ -24,14 +24,11 @@ class WizardRound:
     def __init__(self, np_random):
         self.np_random = np_random
 
-    def start_new_round(self, starting_player_idx, num_players, top_card) -> None:
+    def start_new_round(self, starting_player_idx, num_players, top_card, trump_color) -> None:
+        self.trump_color = trump_color
         self.top_card = top_card
-        self.round_color = None
         self.num_players = num_players
         self.points = [0 for _ in range(self.num_players)]
-        if self.top_card != None:
-            rank, suit = str(self.top_card).split('-')
-            self.round_color = suit
         self.current_player_idx: int = starting_player_idx
         self.starting_player_idx: int = starting_player_idx
         self.trick: list = []
@@ -75,7 +72,7 @@ class WizardRound:
             self.winner_idx = self.current_player_idx
         else:
             current_winner = compare_trick_winner(
-                self.winner_card, card, self.top_card)
+                self.winner_card, card, self.top_card, self.trump_color)
             if current_winner < 0:
                 self.winner_card = card
                 self.winner_idx = self.current_player_idx
@@ -88,24 +85,6 @@ class WizardRound:
 
         self.current_player_idx = (
             self.current_player_idx + 1) % self.num_players
-
-        # if the trick is full, this round is over
-        # if len(self.trick) == WizardRound.num_players:
-        #     self.is_over = True
-
-        # self.players_that_played_cards += 1
-
-        # self.current_player_idx = (
-        #                                   self.current_player_idx + 1) % self.num_players
-
-        # if self.players_that_played_cards == self.num_players:
-        #     self.points[self.winner_idx] += 1
-        #     self.players_that_played_cards = 0
-        #     self.current_player_idx = self.winner_idx
-        #     self.sub_round_counter += 1
-
-        # if self.players_that_played_cards == self.num_players and self.sub_round_counter == self.sub_rounds_to_play:
-        #     self.is_over = True
 
     def get_legal_actions(self, player) -> list:
         ''' get legal actions for current player
@@ -148,7 +127,7 @@ class WizardRound:
         state['hand'] = cards2list(player.hand)
         state['current_trick'] = cards2list(self.trick)
         state['top_card'] = str(self.top_card)
-        state['round_color'] = self.round_color
+        state['round_color'] = self.trump_color
         state['target_card'] = str(self.target) if str(
             self.target) is not None else None
         state['winner_card'] = str(self.winner_card) if str(
