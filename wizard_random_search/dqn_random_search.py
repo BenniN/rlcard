@@ -33,11 +33,12 @@ args = {
     "epsilon_end": [0.1, 0.05, 0.01],
     "epsilon_decay_steps": [100000],
     "batch_size": [32, 64],
-    "mlp_layers": [[512, 512, 512], [512, 256, 128], [512, 512]],
+    "mlp_layers": [[512, 512, 512], [512, 512]],
     "num_eval_games": [1000],
-    "num_episodes": [100000],
+    "num_episodes": [50000],
     "evaluate_every": [1000],
-    "learning_rate": [0.0001, 0.00005, 0.00001, 0.000005]
+    "learning_rate": [0.0001, 0.00005, 0.00001, 0.000005],
+    "game_anticipate_max_param": [0.5, 0.6, 0.7, 0.8, 0.4]
 }
 
 
@@ -65,7 +66,7 @@ def train(log_dir, env_name, num_cards, num_players,
           update_target_estimator_every, discount_factor,
           epsilon_start, epsilon_end, epsilon_decay_steps,
           batch_size, mlp_layers, num_eval_games,
-          num_episodes, evaluate_every, learning_rate):
+          num_episodes, evaluate_every, learning_rate, game_anticipate_max_param):
     # Check whether gpu is available
     device = get_device()
     print(device)
@@ -86,7 +87,8 @@ def train(log_dir, env_name, num_cards, num_players,
                 'seed': seed,
                 'game_judge_by_points': game_judge_by_points,
                 'game_num_players': num_players,
-                'game_num_rounds': eachround
+                'game_num_rounds': eachround,
+                'game_anticipate_max_param': game_anticipate_max_param
             }
         )
 

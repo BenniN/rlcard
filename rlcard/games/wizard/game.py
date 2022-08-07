@@ -116,7 +116,7 @@ class WizardGame():
             self.players[i].forecast = round(
                 get_hand_forecast_value(self.anticipate_max_param, self.players[i].hand, self.num_players,
                                         self.max_num_rounds, self.top_card, self.trump_color, relative_player_pos))
-            print('forecast_player_' + str(i) + ':', self.players[i].forecast)
+           #print('forecast_player_' + str(i) + ':', self.players[i].forecast)
 
         self.round = Round(self.np_random)
         self.round.start_new_round(

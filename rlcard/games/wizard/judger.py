@@ -37,6 +37,6 @@ class WizardJudger:
                 result[i] = points[i] + 2
             else:
                 result[i] = - abs(player_forecasts[i] - points[i])
-        print("tricks", points)
+        #print("tricks", points)
 
         return result

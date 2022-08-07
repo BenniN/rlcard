@@ -24,7 +24,7 @@ args = {
     # "algorithm": "nfsp",
     # "log_dir": "final_models/nfsp_wizard_player_1",
     "algorithm": "dqn",
-    "log_dir": "final_models/dqn_5e07_mil_seed42",
+    "log_dir": "final_models/complete_logic/dqn_5e06_complete_model_09_anticipation_",
     "env_name": "wizard",
     "game_judge_by_points": 0,
     "num_cards": 60,
@@ -39,9 +39,10 @@ args = {
     "batch_size": 32,
     "mlp_layers": [512, 512],
     "num_eval_games": 1000,
-    "num_episodes": 1000000,
+    "num_episodes": 100000,
     "evaluate_every": 1000,
-    "learning_rate": 5e-07,  # 1*10^-5 oder 0.00001 5e-06
+    "learning_rate": 5e-06,  # 1*10^-5 oder 0.00001 5e-06
+    "game_anticipate_max_param": 0.9
 }
 
 
@@ -49,7 +50,7 @@ def train(algorithm, log_dir, env_name, num_cards, num_players, game_judge_by_po
           update_target_estimator_every, discount_factor,
           epsilon_start, epsilon_end, epsilon_decay_steps,
           batch_size, mlp_layers, num_eval_games,
-          num_episodes, evaluate_every, learning_rate):
+          num_episodes, evaluate_every, learning_rate, game_anticipate_max_param):
     # Check whether gpu is available
     device = get_device()
     print(device)
@@ -69,7 +70,8 @@ def train(algorithm, log_dir, env_name, num_cards, num_players, game_judge_by_po
                 'seed': seed,
                 'game_judge_by_points': game_judge_by_points,
                 'game_num_players': num_players,
-                'game_num_rounds': eachround
+                'game_num_rounds': eachround,
+                'game_anticipate_max_param': game_anticipate_max_param
             }
         )
 
@@ -143,7 +145,8 @@ def train(algorithm, log_dir, env_name, num_cards, num_players, game_judge_by_po
                    str(eachround), algorithm)
 
         # Save model
-        save_path = os.path.join(log_dir, 'model_round_' + str(eachround) + '.pth')
+        save_path = os.path.join(
+            log_dir, 'model_round_' + str(eachround) + '.pth')
         torch.save(agent, save_path)
         print('Model saved in', save_path)
 

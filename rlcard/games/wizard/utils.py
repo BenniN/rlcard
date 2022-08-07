@@ -227,7 +227,7 @@ def encode_observation_var0(state):
 
 
 def encode_observation_var1(state):
-    ''' the shape of this encoding is (405)
+    ''' the shape of this encoding is (370)
 
     Parameters:
         - state (dict): the state of the game
@@ -345,9 +345,9 @@ def get_hand_forecast_value(anticipate_max_param, hand, num_players, num_round, 
         current_value = get_card_forecast_value(
             anticipate_max_param, card, num_players, num_round, top_card, trump_color, current_position)
         hand_value += current_value
-        print(str(card), current_value)
+        #print(str(card), current_value)
 
-    print("hand_value", hand_value)
+    #print("hand_value", hand_value)
     return hand_value
 
 
