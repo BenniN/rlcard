@@ -10,15 +10,16 @@ from rlcard.utils import (
 )
 
 args = {
-    "_seed": None,
-    "_models": ["final_models/dqn_5e06_mil_seed42/model_round_20.pth",
-                "final_models/dqn_5e07_mil_seed42/model_round_20.pth",
+    "_seed": 20,
+    "_models": ["final_models/false_complete_logic/dqn_5e06_complete_model_08_anticipation_mil/model_round_20.pth",
+                "random",
                 "random"],
     "_env_name": "wizard",
     "_num_cards": 60,
     "_num_players": 3,
     "_num_games": 10000,
     "_num_rounds": 20,
+    "game_anticipate_max_param": 0.5
 }
 
 
@@ -34,7 +35,7 @@ def load_model(model_path, env=None, position=None, device=None):
     return agent
 
 
-def evaluate(_seed, _models, _env_name, _num_games, _num_players, _num_cards, _num_rounds):
+def evaluate(_seed, _models, _env_name, _num_games, _num_players, _num_cards, _num_rounds,game_anticipate_max_param):
 
     # Check whether gpu is available
     device = get_device()
@@ -56,7 +57,8 @@ def evaluate(_seed, _models, _env_name, _num_games, _num_players, _num_cards, _n
             config={
                 'seed': _seed,
                 'game_num_players': _num_players,
-                'game_num_rounds': eachround
+                'game_num_rounds': eachround,
+                'game_anticipate_max_param': game_anticipate_max_param
             }
         )
 

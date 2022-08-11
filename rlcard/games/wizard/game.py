@@ -109,7 +109,9 @@ class WizardGame():
             self.trump_color = self.top_card.suit
 
         # player starts the game
-        self.current_player = self.np_random.randint(0, self.num_players - 1)
+        self.current_player = self.np_random.randint(0, self.num_players)
+
+        #print("currentplayer: " , self.current_player)
 
         for i in range(self.num_players):
             relative_player_pos = (i - self.current_player) % self.num_players

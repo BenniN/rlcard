@@ -24,7 +24,7 @@ args = {
     # "algorithm": "nfsp",
     # "log_dir": "final_models/nfsp_wizard_player_1",
     "algorithm": "dqn",
-    "log_dir": "final_models/complete_logic/dqn_5e06_complete_model_09_anticipation_",
+    "log_dir": "final_models/complete_logic/dqn_1e07_complete_model_08_anticipation_mil",
     "env_name": "wizard",
     "game_judge_by_points": 0,
     "num_cards": 60,
@@ -39,10 +39,10 @@ args = {
     "batch_size": 32,
     "mlp_layers": [512, 512],
     "num_eval_games": 1000,
-    "num_episodes": 100000,
+    "num_episodes": 1000000,
     "evaluate_every": 1000,
     "learning_rate": 5e-06,  # 1*10^-5 oder 0.00001 5e-06
-    "game_anticipate_max_param": 0.9
+    "game_anticipate_max_param": 0.8
 }
 
 

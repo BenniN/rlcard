@@ -36,7 +36,8 @@ def init_forecast_dict():
     for folder in player_num_folder_list:
         result[folder] = {}
         for file in forecast_file_dict:
-            with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + folder + '/' + folder + '_' + file + '.json'), 'r') as current_file:
+            with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/' + folder + '/' + folder + '_' + file + '.json'),
+                      'r') as current_file:
                 action_space = json.load(
                     current_file, object_pairs_hook=OrderedDict)
                 action_list = list(ACTION_SPACE.keys())
@@ -312,7 +313,7 @@ def encode_observation_perfect_information(state):
     obs = np.zeros((623), dtype=int)
 
     for i in range(len(state['hand_cards'])):
-        hand_cards_idx = [i*60 + ACTION_SPACE[card]
+        hand_cards_idx = [i * 60 + ACTION_SPACE[card]
                           for card in state['hand_cards'][i]]
         obs[hand_cards_idx] = 1
 
@@ -339,29 +340,31 @@ def encode_observation_perfect_information(state):
     return obs
 
 
-def get_hand_forecast_value(anticipate_max_param, hand, num_players, num_round, top_card, trump_color, current_position):
+def get_hand_forecast_value(anticipate_max_param, hand, num_players, num_round, top_card, trump_color,
+                            current_position):
     hand_value = 0
     for card in hand:
         current_value = get_card_forecast_value(
             anticipate_max_param, card, num_players, num_round, top_card, trump_color, current_position)
         hand_value += current_value
-        #print(str(card), current_value)
+        # print(str(card), current_value)
 
-    #print("hand_value", hand_value)
+    # print("hand_value", hand_value)
     return hand_value
 
 
 def card_rank_to_value(card, action_space):
     if card.suit == "n":
-        card_value = action_space["14"]/100
+        card_value = action_space["14"] / 100
     elif card.suit == "w":
-        card_value = action_space["15"]/100
+        card_value = action_space["15"] / 100
     else:
-        card_value = action_space[str(card.rank)]/100
+        card_value = action_space[str(card.rank)] / 100
     return card_value
 
 
-def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, top_card, trump_color, current_position) -> float:
+def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, top_card, trump_color,
+                            current_position) -> float:
     """
         anticipate_max_param: 0 <= x <= 1
             x=1 : weighting towards extrem(max) postion.
@@ -377,6 +380,9 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
         path = "six_players"
 
     card_value = 0
+    weighted_value = 0
+    pos_1_one_weight = 0
+    pos_others_weight = 0
 
     if num_round < 2:
         '''in the first round the values are fix due to the position of the player
@@ -432,9 +438,19 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
             action_space_max = forecast_dict[path]['first_position_no_trumpcolor']['action_space']
             action_space_min = forecast_dict[path]['average_position_no_trumpcolor']['action_space']
 
-            card_value = card_rank_to_value(card, action_space_max) * anticipate_max_param + \
-                card_rank_to_value(card, action_space_min) * \
-                (1-anticipate_max_param)
+            pos_1_one_weight = (1 / num_players)
+            pos_others_weight = ((num_players - 1) / num_players)
+            weighted_value = (
+                        anticipate_max_param * pos_1_one_weight + ((1 - anticipate_max_param) * pos_others_weight))
+            card_value = ((card_rank_to_value(card, action_space_max) * pos_1_one_weight * anticipate_max_param) + (
+                        card_rank_to_value(card, action_space_min) * pos_others_weight * (
+                            1 - anticipate_max_param))) / weighted_value
+
+            # card_value = ((card_rank_to_value(card, action_space_max) * anticipate_max_param) + card_rank_to_value(card, action_space_min) * (1 - anticipate_max_param))
+
+            # card_value = (card_rank_to_value(card, action_space_max) + (card_rank_to_value(card, action_space_min) * (num_players - 1))) / num_players
+            # card_value = card_rank_to_value(card, action_space_max)
+            # card_value = card_rank_to_value(card, action_space_min)
 
             return card_value
 
@@ -443,10 +459,9 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
             action_space_max = forecast_dict[path]['first_position']['action_space']
             action_space_min = forecast_dict[path]['average_position']['action_space']
 
-            card_value = card_rank_to_value(card, action_space_max) * anticipate_max_param + \
-                card_rank_to_value(card, action_space_min) * \
-                (1-anticipate_max_param)
-
+            # card_value = (card_rank_to_value(card, action_space_max) * anticipate_max_param + (card_rank_to_value(card, action_space_min) * (num_players - 1)) * (1 - anticipate_max_param)) / num_players
+            card_value = (card_rank_to_value(card, action_space_max) + (
+                    card_rank_to_value(card, action_space_min) * (num_players - 1))) / num_players
             return card_value
 
         elif card.suit == trump_color:
@@ -494,10 +509,10 @@ def encode_obs_game_info(state, obs, start_idx):
         obs[start_idx + 6 + current_player_idx] = 1
 
     if start_player_idx is not None:
-        obs[start_idx+12+start_player_idx] = 1
+        obs[start_idx + 12 + start_player_idx] = 1
 
     if round_color is not None and round_color != 'Invalid suit':
-        obs[start_idx+18+round_color] = 1
+        obs[start_idx + 18 + round_color] = 1
 
 
 def encode_obs_game_info_forecast(state, obs, start_idx):
@@ -509,13 +524,13 @@ def encode_obs_game_info_forecast(state, obs, start_idx):
     obs[start_idx] = start_player_idx
 
     if winner_idx is not None:
-        obs[start_idx+1] = winner_idx
+        obs[start_idx + 1] = winner_idx
 
     if current_player_idx is not None:
         obs[start_idx + 2] = current_player_idx
 
     if round_color is not None and round_color != 'Invalid suit':
-        obs[start_idx+3+round_color] = 1
+        obs[start_idx + 3 + round_color] = 1
 
 
 def save_args_params(args):
@@ -610,7 +625,8 @@ def compare_trick_winner(winner_card, compare_to_card, top_card, trump_color) ->
         if trump_color == "n":
             ignore_trump_color = True
 
-    if (winner_card.suit == "w" and compare_to_card.suit != "w") or (winner_card.suit == "w" and compare_to_card.suit == "w"):
+    if (winner_card.suit == "w" and compare_to_card.suit != "w") or (
+            winner_card.suit == "w" and compare_to_card.suit == "w"):
         return 1
     if winner_card.suit != "w" and compare_to_card.suit == "w":
         return -1

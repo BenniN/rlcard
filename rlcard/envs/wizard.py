@@ -152,7 +152,6 @@ class WizardEnv(Env):
             state['num_players'] = self.num_players
             state['hand_cards'] = [cards2list(player.hand)
                                    for player in self.game.players]
-            state['blind_cards='] = self.game.blind_cards
             state['trick'] = cards2list(self.game.round.trick)
             state['played_tricks'] = self.game.trick_history
             state['current_player'] = self.game.round.current_player_idx
