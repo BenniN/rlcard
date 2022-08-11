@@ -363,6 +363,17 @@ def card_rank_to_value(card, action_space):
     return card_value
 
 
+def get_card_anticipated_value(anticipate_max_param, card, action_space_max, action_space_min, num_players) -> float:
+    pos_1_one_weight = (1 / num_players)
+    pos_others_weight = ((num_players - 1) / num_players)
+    weighted_value = (
+            anticipate_max_param * pos_1_one_weight + ((1 - anticipate_max_param) * pos_others_weight))
+    card_value = ((card_rank_to_value(card, action_space_max) * pos_1_one_weight * anticipate_max_param) + (
+            card_rank_to_value(card, action_space_min) * pos_others_weight * (
+            1 - anticipate_max_param))) / weighted_value
+    return card_value
+
+
 def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, top_card, trump_color,
                             current_position) -> float:
     """
@@ -380,9 +391,6 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
         path = "six_players"
 
     card_value = 0
-    weighted_value = 0
-    pos_1_one_weight = 0
-    pos_others_weight = 0
 
     if num_round < 2:
         '''in the first round the values are fix due to the position of the player
@@ -438,20 +446,8 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
             action_space_max = forecast_dict[path]['first_position_no_trumpcolor']['action_space']
             action_space_min = forecast_dict[path]['average_position_no_trumpcolor']['action_space']
 
-            pos_1_one_weight = (1 / num_players)
-            pos_others_weight = ((num_players - 1) / num_players)
-            weighted_value = (
-                    anticipate_max_param * pos_1_one_weight + ((1 - anticipate_max_param) * pos_others_weight))
-            card_value = ((card_rank_to_value(card, action_space_max) * pos_1_one_weight * anticipate_max_param) + (
-                    card_rank_to_value(card, action_space_min) * pos_others_weight * (
-                    1 - anticipate_max_param))) / weighted_value
-
-            # card_value = ((card_rank_to_value(card, action_space_max) * anticipate_max_param) + card_rank_to_value(card, action_space_min) * (1 - anticipate_max_param))
-
-            # card_value = (card_rank_to_value(card, action_space_max) + (card_rank_to_value(card, action_space_min) * (num_players - 1))) / num_players
-            # card_value = card_rank_to_value(card, action_space_max)
-            # card_value = card_rank_to_value(card, action_space_min)
-
+            card_value = get_card_anticipated_value(anticipate_max_param, card, action_space_max, action_space_min,
+                                                    num_players)
             return card_value
 
         # top_card.suit is "w" and card.suit is not "trump_color":
@@ -459,13 +455,8 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
             action_space_max = forecast_dict[path]['first_position']['action_space']
             action_space_min = forecast_dict[path]['average_position']['action_space']
 
-            pos_1_one_weight = (1 / num_players)
-            pos_others_weight = ((num_players - 1) / num_players)
-            weighted_value = (
-                    anticipate_max_param * pos_1_one_weight + ((1 - anticipate_max_param) * pos_others_weight))
-            card_value = ((card_rank_to_value(card, action_space_max) * pos_1_one_weight * anticipate_max_param) + (
-                    card_rank_to_value(card, action_space_min) * pos_others_weight * (
-                    1 - anticipate_max_param))) / weighted_value
+            card_value = get_card_anticipated_value(anticipate_max_param, card, action_space_max, action_space_min,
+                                                    num_players)
             return card_value
 
         elif card.suit == trump_color:
@@ -565,7 +556,7 @@ def create_wizard_dmc_graph(model_path):
             x_other.append(float(row['mean_episode_return_1']))
 
     fig, ax = plt.subplots()
-    ax.plot(y, x_wizard, label='Wizard Player')
+    ax.plot(y, x_wizard, label='DMC Trained Player')
     ax.plot(y, x_other, label='Other Players')
     ax.set(xlabel='Tick', ylabel='reward')
     ax.legend()
