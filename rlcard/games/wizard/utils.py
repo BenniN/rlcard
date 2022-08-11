@@ -441,10 +441,10 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
             pos_1_one_weight = (1 / num_players)
             pos_others_weight = ((num_players - 1) / num_players)
             weighted_value = (
-                        anticipate_max_param * pos_1_one_weight + ((1 - anticipate_max_param) * pos_others_weight))
+                    anticipate_max_param * pos_1_one_weight + ((1 - anticipate_max_param) * pos_others_weight))
             card_value = ((card_rank_to_value(card, action_space_max) * pos_1_one_weight * anticipate_max_param) + (
-                        card_rank_to_value(card, action_space_min) * pos_others_weight * (
-                            1 - anticipate_max_param))) / weighted_value
+                    card_rank_to_value(card, action_space_min) * pos_others_weight * (
+                    1 - anticipate_max_param))) / weighted_value
 
             # card_value = ((card_rank_to_value(card, action_space_max) * anticipate_max_param) + card_rank_to_value(card, action_space_min) * (1 - anticipate_max_param))
 
@@ -459,9 +459,13 @@ def get_card_forecast_value(anticipate_max_param, card, num_players, num_round, 
             action_space_max = forecast_dict[path]['first_position']['action_space']
             action_space_min = forecast_dict[path]['average_position']['action_space']
 
-            # card_value = (card_rank_to_value(card, action_space_max) * anticipate_max_param + (card_rank_to_value(card, action_space_min) * (num_players - 1)) * (1 - anticipate_max_param)) / num_players
-            card_value = (card_rank_to_value(card, action_space_max) + (
-                    card_rank_to_value(card, action_space_min) * (num_players - 1))) / num_players
+            pos_1_one_weight = (1 / num_players)
+            pos_others_weight = ((num_players - 1) / num_players)
+            weighted_value = (
+                    anticipate_max_param * pos_1_one_weight + ((1 - anticipate_max_param) * pos_others_weight))
+            card_value = ((card_rank_to_value(card, action_space_max) * pos_1_one_weight * anticipate_max_param) + (
+                    card_rank_to_value(card, action_space_min) * pos_others_weight * (
+                    1 - anticipate_max_param))) / weighted_value
             return card_value
 
         elif card.suit == trump_color:
