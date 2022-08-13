@@ -31,7 +31,7 @@ class WizardJudger:
 
     def judge_game_var2(self, points, player_forecasts) -> list:
         result = [0 for _ in range(len(points))]
-        #print("forecast", player_forecasts)
+        # print("forecast", player_forecasts)
 
         for i in range(len(points)):
             if points[i] == player_forecasts[i]:

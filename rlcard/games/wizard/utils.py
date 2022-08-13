@@ -19,7 +19,7 @@ with open(os.path.join(ROOT_PATH, 'games/wizard/jsondata/action_space.json'), 'r
     ACTION_LIST = list(ACTION_SPACE.keys())
 
 
-def init_forecast_dict():
+def init_forecast_dict() -> dict:
     result = {}
 
     player_num_folder_list = ['three_players',
