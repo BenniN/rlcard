@@ -94,7 +94,6 @@ class WizardRound:
         '''
 
         hand = player.hand  # get hand of current player
-        hand_size = player.hand_size
         legal_actions = []
 
         # if no card has been played, all cards are legal
@@ -133,8 +132,6 @@ class WizardRound:
         state['winner_card'] = str(self.winner_card) if str(
             self.winner_card) is not None else None
         state['winner'] = self.winner_idx
-        state['valued_cards'] = cards2list(
-            player.valued_cards) if player.is_single_player else []
         state['legal_actions'] = self.get_legal_actions(player)
         state['start_player'] = self.starting_player_idx
         return state

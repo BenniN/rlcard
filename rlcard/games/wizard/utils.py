@@ -610,14 +610,14 @@ def compare_trick_winner(winner_card, compare_to_card, top_card, trump_color) ->
         - target (WizardCard): The current winner of the trick
         - compare_to_card (WizardCard): The card to compare to
     '''
-    trump_color = None
+
     ignore_trump_color = False
 
     if top_card == None:
         ignore_trump_color = True
 
     else:
-        if trump_color == "n":
+        if top_card == "n":
             ignore_trump_color = True
 
     if (winner_card.suit == "w" and compare_to_card.suit != "w") or (

@@ -224,5 +224,8 @@ class WizardGame():
 
         return self.judger.judge_game_var2(self.points, forecasts)
 
+    def get_payoffs2(self) -> list:
+        return self.points
+
     def get_legal_actions(self) -> list:
         return self.round.get_legal_actions(self.players[self.round.current_player_idx])

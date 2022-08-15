@@ -4,9 +4,7 @@ class WizardPlayer:
     Instance attributes:
         - np_random (numpy.random.RandomState): numpy random state
         - player_id (int): The id of the player
-        - is_wizard_player (bool): Whether the player is the wizard player
         - hand (list): The cards in the hand
-        - valued_cards (list): The cards layed asside and converted to points
     '''
 
     def __init__(self, player_id, np_random, is_single_player=False):
@@ -15,7 +13,6 @@ class WizardPlayer:
         Parameters:
             - player_id (int): The id of the player
             - np_random (numpy.random.RandomState): numpy random state
-            - is_wizard_player (bool): Whether the player is the wizard player
         '''
         self.np_random = np_random
         self.player_id: int = player_id
