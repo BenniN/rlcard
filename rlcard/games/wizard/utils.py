@@ -124,38 +124,6 @@ def get_cards_played(tricks_played, current_trick) -> list:
 
     return card_idxs
 
-
-def set_wizard_player_deck(player, blind_cards) -> None:
-    """
-    this function is a helper function for selecting
-    the cards from the blind deck for the wizard player
-
-    the selection process is rule based:
-
-        1. sort the blind and hand cards by rank descending
-        2. throw away worst ranked card from blind
-        3. take best 2 cards from hand
-    """
-
-    #  get hand cards
-    hand_cards = player.hand
-
-    # sort cards
-    sorted_blinds = sorted(blind_cards, reverse=True)
-    sorted_hand = sorted(hand_cards, reverse=True)
-
-    # generate new hand
-    new_hand = sorted_blinds[:-1] + sorted_hand[0:2]
-
-    # generate throw aways
-    throw_away = sorted_hand[2:]
-    throw_away.append(sorted_blinds[-1])
-
-    # set player cards
-    player.hand = new_hand
-    player.valued_cards = throw_away
-
-
 def set_observation(obs, plane, indexes):
     ''' set observation of a specific plane
 
