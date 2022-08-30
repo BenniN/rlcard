@@ -1,7 +1,11 @@
 # Repository of RL algorithm training for Cardgame Wizard via RLCARD
 
-*[![Wizard implementation](https://github.com/BenniN/rlcard/tree/master/rlcard/games/wizard)]
-*[![Wizard Environment](https://github.com/BenniN/rlcard/blob/master/rlcard/envs/wizard.py)]
+* [![Wizard implementation](https://github.com/BenniN/rlcard/tree/master/rlcard/games/wizard)] All implementations concerning game logic and training of game rounds
+* [![Wizard Environment](https://github.com/BenniN/rlcard/blob/master/rlcard/envs/wizard.py)] Displays the environment of the Wizard game
+* [![Play Wizard File](https://github.com/BenniN/rlcard/blob/master/rlcard/games/wizard/play_wizard.py)] This file needs trained models which are included in the electronic device given with the thesis
+* [![Play Wizard File](https://github.com/BenniN/rlcard/tree/master/rlcard/games/wizard/model_training)] Train your own models with your own Hyperparams three algorithms are available
+
+ 
 
 
 ### Create Virtual Environment venv
