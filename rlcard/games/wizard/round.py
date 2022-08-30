@@ -1,4 +1,3 @@
-# from rlcard.games.wizard.card import WizardCard as Card
 from rlcard.games.wizard.utils import cards2list, compare_trick_winner
 
 
@@ -47,13 +46,6 @@ class WizardRound:
             - action (str): the action of the current player
         '''
 
-        """ Logs for Testing """
-        # print("current player: ", self.current_player_idx)
-        # print("Player Cards: ", cards2list(
-        #     players[self.current_player_idx].hand))
-        # print("Target Card: ", str(self.target))
-        # print("Played Card: ", action)
-
         # get current player
         player = players[self.current_player_idx]
 
@@ -81,12 +73,12 @@ class WizardRound:
 
         self.trick.append(card)
 
-        if(len(self.trick)) == self.num_players:
+        if (len(self.trick)) == self.num_players:
             self.points[self.winner_idx] += 1
             self.is_over = True
 
         self.current_player_idx = (
-            self.current_player_idx + 1) % self.num_players
+                                          self.current_player_idx + 1) % self.num_players
 
     def get_legal_actions(self, player) -> list:
         ''' get legal actions for current player
@@ -137,22 +129,3 @@ class WizardRound:
         state['legal_actions'] = self.get_legal_actions(player)
         state['start_player'] = self.starting_player_idx
         return state
-
-    def get_hand_value(self, player) -> int:
-        ''' get handvalue for current player
-            the handvalue is needed for the forcasting
-
-                Parameters:
-                    - player (Player): the current player
-                '''
-
-        hand_value = 0
-        hand = player.hand
-        handsize = len(player.hand)
-
-        if handsize == 1:
-            if self.current_player_idx == 0:
-                for card in hand:
-                    cards2list(hand)
-
-        return hand_value
