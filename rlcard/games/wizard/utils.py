@@ -1,14 +1,13 @@
-import numpy as np
+import csv
 import json
 import os
-import csv
-import matplotlib.pyplot as plt
+import random
 from collections import OrderedDict
 
-import random
+import matplotlib.pyplot as plt
+import numpy as np
 
 import rlcard
-
 from rlcard.games.wizard.card import WizardCard as Card
 
 # Read required docs
@@ -123,6 +122,7 @@ def get_cards_played(tricks_played, current_trick) -> list:
             card_idxs.append(ACTION_SPACE[str(card)])
 
     return card_idxs
+
 
 def set_observation(obs, plane, indexes):
     ''' set observation of a specific plane
@@ -515,7 +515,6 @@ def create_wizard_dmc_graph(model_path):
     x_2 = []
     x_3 = []
     tick = 0
-
 
     for row in csvreader:
         if isfloat(row['mean_episode_return_1']):
