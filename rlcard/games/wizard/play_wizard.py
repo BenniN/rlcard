@@ -1,12 +1,11 @@
-from rlcard.agents import RandomAgent
-import rlcard
 import os
 
+import rlcard
+from rlcard.agents import RandomAgent
+from rlcard.agents.human_agents.wizard_human_agent import HumanAgent
 from rlcard.utils import (
     get_device,
 )
-
-from rlcard.agents.human_agents.wizard_human_agent import HumanAgent
 
 
 def load_model(model_path, env=None, position=None, device=None):
@@ -25,6 +24,7 @@ def global_payoffs(payoffs):
     for k in range(len(xglobal_payoffs)):
         xglobal_payoffs[k] += payoffs[k]
     return xglobal_payoffs
+
 
 def proceed_round(numround):
     num_rounds = numround
@@ -64,6 +64,6 @@ if __name__ == '__main__':
     Der Startspieler der jeweiligen Spielrunden ist zufällig
     Es werden die Zustandsinformationen nach einem Stich mit angegeben. (dekodiert und encodiert)
     '''
-    xglobal_payoffs = [0,0,0]
+    xglobal_payoffs = [0, 0, 0]
     for i in range(1, 20):
         proceed_round(i)
