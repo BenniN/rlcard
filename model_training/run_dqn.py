@@ -24,11 +24,11 @@ args = {
     # "algorithm": "nfsp",
     # "log_dir": "final_models/nfsp_wizard_player_1",
     "algorithm": "dqn",
-    "log_dir": "final_models/complete_logic/dqn_1e07_complete_model_08_anticipation_mil",
+    "log_dir": "final_dqn_models/complete_logic/dqn_5players_5e06_06_round1133",
     "env_name": "wizard",
     "game_judge_by_points": 0,
     "num_cards": 60,
-    "num_players": 3,
+    "num_players": 5,
     "seed": 42,
     "replay_memory_size": 200000,
     "update_target_estimator_every": 1000,
@@ -39,10 +39,10 @@ args = {
     "batch_size": 32,
     "mlp_layers": [512, 512],
     "num_eval_games": 1000,
-    "num_episodes": 1000000,
+    "num_episodes": 100000,
     "evaluate_every": 1000,
     "learning_rate": 5e-06,  # 1*10^-5 oder 0.00001 5e-06
-    "game_anticipate_max_param": 0.8
+    "game_anticipate_max_param": 0.6
 }
 
 
@@ -60,7 +60,7 @@ def train(algorithm, log_dir, env_name, num_cards, num_players, game_judge_by_po
     max_rounds = int(num_cards / num_players)
     # rounds_to_evaluate = [7]
     # rounds_to_evaluate = [int(max_rounds / 2)]
-    rounds_to_evaluate = [max_rounds]
+    rounds_to_evaluate = [11]
 
     for eachround in rounds_to_evaluate:
         # Make the environment with seed

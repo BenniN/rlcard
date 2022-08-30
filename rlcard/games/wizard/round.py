@@ -29,6 +29,7 @@ class WizardRound:
         self.top_card = top_card
         self.num_players = num_players
         self.points = [0 for _ in range(self.num_players)]
+        self.judgepoints = [0 for _ in range(self.num_players)]
 
         self.current_player_idx: int = starting_player_idx
         self.starting_player_idx: int = starting_player_idx

@@ -511,21 +511,26 @@ def create_wizard_dmc_graph(model_path):
     csvreader = csv.DictReader(file)
 
     y = []
-    x_wizard = []
-    x_other = []
+    x_1 = []
+    x_2 = []
+    x_3 = []
     tick = 0
+
 
     for row in csvreader:
         if isfloat(row['mean_episode_return_1']):
-            x_wizard.append(float(row['mean_episode_return_0']))
+            x_1.append(float(row['mean_episode_return_0']))
             y.append(tick)
             tick += 1
         if isfloat(row['mean_episode_return_1']):
-            x_other.append(float(row['mean_episode_return_1']))
+            x_2.append(float(row['mean_episode_return_1']))
+        if isfloat(row['mean_episode_return_1']):
+            x_3.append(float(row['mean_episode_return_2']))
 
     fig, ax = plt.subplots()
-    ax.plot(y, x_wizard, label='DMC Trained Player')
-    ax.plot(y, x_other, label='Other Players')
+    ax.plot(y, x_1, label='Player 0')
+    ax.plot(y, x_2, label='Player 1')
+    ax.plot(y, x_3, label='Player 2')
     ax.set(xlabel='Tick', ylabel='reward')
     ax.legend()
     ax.grid()

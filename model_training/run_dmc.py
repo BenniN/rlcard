@@ -20,22 +20,24 @@ args = {
     "seed": 42,
     'load_model': True,
     'xpid': 'dmc',
-    'save_interval': 100,
-    'num_actor_devices': 1,
-    'num_actors': 4,
+    'save_interval': 1000,
+    'num_actor_devices': 5,
+    'num_actors': 3,
     'training_device': 'cuda:0',
-    'log_dir': 'final_models/dmc_wizard_player_2',
+    'log_dir': 'final_dmc_models/dmc_5e06_round20_06_3p',
     'total_frames': 10000000,
     'exp_epsilon': 0.01,
     'batch_size': 32,
     'unroll_length': 100,
     'num_buffers': 50,
-    'num_threads': 4,
+    'num_threads': 6,
     'max_grad_norm': 40,
-    'learning_rate': 0.0001,
+    'learning_rate': 5e-06,
     'alpha': 0.99,
     'momentum': 0,
     'epsilon': 0.00001,
+    'game_anticipate_max_param': 0.6
+
 }
 
 
@@ -43,7 +45,7 @@ def train(env_name, game_judge_by_points, num_cards, num_players,
           cuda, seed, load_model, xpid, save_interval, num_actor_devices, num_actors,
           training_device, log_dir, total_frames, exp_epsilon,
           batch_size, unroll_length, num_buffers, num_threads,
-          max_grad_norm, learning_rate, alpha, momentum, epsilon):
+          max_grad_norm, learning_rate, alpha, momentum, epsilon, game_anticipate_max_param):
 
     device = get_device()
     print(device)
@@ -53,7 +55,7 @@ def train(env_name, game_judge_by_points, num_cards, num_players,
     max_rounds = int(num_cards / num_players)
     # rounds_to_evaluate = [7]
     # rounds_to_evaluate = [int(max_rounds / 2)]
-    rounds_to_evaluate = [max_rounds]
+    rounds_to_evaluate = [20]
     for eachround in rounds_to_evaluate:
         env = rlcard.make(
             env_name,
@@ -61,7 +63,8 @@ def train(env_name, game_judge_by_points, num_cards, num_players,
                 'seed': seed,
                 'game_judge_by_points': game_judge_by_points,
                 'game_num_players': num_players,
-                'game_num_rounds': eachround
+                'game_num_rounds': eachround,
+                'game_anticipate_max_param': game_anticipate_max_param
             }
         )
 

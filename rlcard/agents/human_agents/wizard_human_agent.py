@@ -60,7 +60,9 @@ def _print_state(state, action_record):
         print('>> Player', pair[0], 'chooses ', end='')
         _print_action(pair[1])
         print('')
-
+    print('\n=============== Your Forecast ===============')
+    print(str(state['current_player_forecast']))
+    print('')
     print('\n=============== Your Hand ===============')
     print(cards2list(state['hand']))
     print('')
@@ -71,10 +73,6 @@ def _print_state(state, action_record):
     print('=============== Trick Cards ===============')
     print(cards2list(state['current_trick']))
     print('')
-    print('========== Players Card Number ===========')
-    # for i in range(state['num_players']):
-    #     if i != state['current_player']:
-    #         print('Player {} has {} cards.'.format(i, state['num_cards'][i]))
     print('======== Actions You Can Choose =========')
     for i, action in enumerate(state['legal_actions']):
         print(str(i)+': ', end='')

@@ -9,17 +9,27 @@ from rlcard.utils import (
     tournament,
 )
 
+dqn07 ="final_dqn_models/complete_logic/dqn_3players_5e06_07_anticipation_round20/model_round_20.pth"
+nfsp07 = "final_nfsp_models/nfsp_5e06_07_3players_round20/model_round_20.pth"
+nfsp07_19 ="final_nfsp_models/nfsp_5e06_07_3players_round19/model_round_19.pth"
+dmc07 ="final_dmc_models/dmc_wizard_5e06_06_round20_3actor/dmc/1_10054400.pth"
+"final_nfsp_models/nfsp_5e06_06_3players_round5/model_round_5.pth"
+"final_dqn_models/complete_logic/dqn_5e06_06_anticipation_3players_round5/model_round_5.pth"
+"final_dmc_models/dmc_5e06_06_round5/dmc/0_10054400.pth"
+
+dqn07_11 = "final_dqn_models/complete_logic/dqn_5e06_07_anticipation_3players_round19/model_round_19.pth"
 args = {
-    "_seed": 20,
-    "_models": ["final_models/false_complete_logic/dqn_5e06_complete_model_08_anticipation_mil/model_round_20.pth",
+    "_seed": 11,
+    "_models": [
                 "random",
+                 "random",
+                 "random",
                 "random"],
     "_env_name": "wizard",
     "_num_cards": 60,
     "_num_players": 3,
-    "_num_games": 10000,
-    "_num_rounds": 20,
-    "game_anticipate_max_param": 0.5
+    "_num_games": 1000,
+    "game_anticipate_max_param": 0.7
 }
 
 
@@ -35,7 +45,7 @@ def load_model(model_path, env=None, position=None, device=None):
     return agent
 
 
-def evaluate(_seed, _models, _env_name, _num_games, _num_players, _num_cards, _num_rounds,game_anticipate_max_param):
+def evaluate(_seed, _models, _env_name, _num_games, _num_players, _num_cards, game_anticipate_max_param):
 
     # Check whether gpu is available
     device = get_device()
@@ -48,7 +58,7 @@ def evaluate(_seed, _models, _env_name, _num_games, _num_players, _num_cards, _n
     max_rounds = int(_num_cards / _num_players)
     # rounds_to_evaluate = [7]
     # rounds_to_evaluate = [int(max_rounds / 2)]
-    rounds_to_evaluate = [max_rounds]
+    rounds_to_evaluate = [1]
     for eachround in rounds_to_evaluate:
 
         # Make the environment with seed

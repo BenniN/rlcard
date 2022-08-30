@@ -26,19 +26,19 @@ args = {
     "num_cards": [60],
     "num_players": [3],
     "seed": [42],
-    "replay_memory_size": [50000, 100000, 200000],
-    "update_target_estimator_every": [1000, 2000, 10000],
-    "discount_factor": [0.75, 0.8, 0.95, 0.99],
+    "replay_memory_size": [100000, 200000],
+    "update_target_estimator_every": [1000],
+    "discount_factor": [0.95, 0.99],
     "epsilon_start": [1.0],
-    "epsilon_end": [0.1, 0.05, 0.01],
+    "epsilon_end": [0.1, ],
     "epsilon_decay_steps": [100000],
     "batch_size": [32, 64],
     "mlp_layers": [[512, 512, 512], [512, 512]],
     "num_eval_games": [1000],
     "num_episodes": [50000],
     "evaluate_every": [1000],
-    "learning_rate": [0.0001, 0.00005, 0.00001, 0.000005],
-    "game_anticipate_max_param": [0.5, 0.6, 0.7, 0.8, 0.4]
+    "learning_rate": [5e-04, 1e-04, 1e-05, 5e-05],
+    "game_anticipate_max_param": [0.6, 0.7, 0.8]
 }
 
 
@@ -76,7 +76,7 @@ def train(log_dir, env_name, num_cards, num_players,
     max_rounds = int(num_cards / num_players)
     # rounds_to_evaluate = [7]
     # rounds_to_evaluate = [int(max_rounds / 2)]
-    rounds_to_evaluate = [max_rounds]
+    rounds_to_evaluate = [19]
 
     for eachround in rounds_to_evaluate:
 
@@ -172,4 +172,4 @@ def save_search_set(random_search_folder, args_string):
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "cpu"
-    randomSearch(args, 'random_search_results/dqn_point_var_0', random_search_iterations)
+    randomSearch(args, 'random_search_results/dqn_round19_2_higher_learning', random_search_iterations)

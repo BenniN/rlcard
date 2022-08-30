@@ -4,7 +4,7 @@ from collections import OrderedDict
 from rlcard.games.wizard.game import WizardGame
 from rlcard.envs import Env
 from rlcard.games.wizard.utils import ACTION_LIST, ACTION_SPACE
-from rlcard.games.wizard.utils import cards2list, encode_observation_var0, encode_observation_var1, \
+from rlcard.games.wizard.utils import cards2list, encode_observation_var1, \
     encode_observation_perfect_information
 
 DEFAULT_GAME_CONFIG = {

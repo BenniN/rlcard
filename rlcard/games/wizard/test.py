@@ -27,19 +27,13 @@ def load_model(model_path, env=None, position=None, device=None):
 
 
 if __name__ == '__main__':
-    # env = WizardGame()
-    # testgame.init_game()
-    # for p in testgame.players:
-    #     playerhand = utils.cards2list(p.hand)
-    #     print(p.player_id)
-    #     card.WizardCard.print_cards(playerhand)
 
     wizardEnv = rlcard.make(
         'wizard',
         config={
-            'seed': None,
+            'seed': 40,
             'game_num_players': 3,
-            'game_num_rounds': 5,
+            'game_num_rounds': 20,
             'game_anticipate_max_param': 0.5
         }
     )
@@ -49,7 +43,8 @@ if __name__ == '__main__':
     env_agents = []
     env_agents.append(HumanAgent(num_actions=wizardEnv.num_actions))
     for _ in range(1, wizardEnv.num_players):
-        env_agents.append(RandomAgent(num_actions=wizardEnv.num_actions))
+        # env_agents.append(RandomAgent(num_actions=wizardEnv.num_actions))
+        env_agents.append(HumanAgent(num_actions=wizardEnv.num_actions))
 
     wizardEnv.set_agents(env_agents)
 
@@ -59,3 +54,4 @@ if __name__ == '__main__':
 
     # rewards = tournament(wizardEnv, 100)
     # print("Rewards:", rewards)
+
