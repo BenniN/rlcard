@@ -1,5 +1,6 @@
 # Wizard RLCard
-
+these Documentations are not updated, read thesis for updated information. This was used to gather current states of the
+thesis
 # Wizard Environment
 
 ## The Game Classes

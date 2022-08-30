@@ -1,7 +1,6 @@
 # Experiment Planning
 
 ## Available Algorithms
-
 - DQN (Deep Q-Network)
 - NFSP (Neural Fictitious Self-Play
 - DMC (Deep Monte-Carlo)
@@ -90,8 +89,6 @@ It may make sense to encode the information about the current trick differently.
 2.  Trick Plane: First Trick Card
 3.  Trick Plane: Second Trick Card
 4.  Trick Plane: Third Trick Card
-
-In this case the temporal information of the trick is still kept. For the last card of the trick obviously there is no encoding needed, because until that state the trick is already played and a new trick has begone. The 4. Plane may also be skippable.
 
 #### Alternative 2
 

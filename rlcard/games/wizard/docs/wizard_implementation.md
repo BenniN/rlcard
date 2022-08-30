@@ -12,6 +12,7 @@ The second approach is that only reinforcement learning is used also for the for
 
 ## How to Forcast
 
-An existing problem that it is not possible to know which card will get the trick for sure. So the forcast is very hard to learn for the reinforcement algorithm. The heuristic approach only works good the less cards you start with in Hand. So the more cards you have in the hand the worse it gets. Due to the game it will bbe possible up to 20 tricks.
+An existing problem that it is not possible to know which card will get the trick for sure. So the forcast is very hard to learn for the reinforcement algorithm. The heuristic approach only works good the less cards you start with in Hand. So the more cards you have in the hand the worse it gets. Due to the game it will be possible up to 20 tricks.
+there need to be a few winning chances for one card, depending on the game state A stochastic approach is needed with a lower and upper boarder  
 
 the heuristic is not yet implemented!
