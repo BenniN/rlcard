@@ -310,6 +310,9 @@ def encode_observation_perfect_information(state):
 
 def get_hand_forecast_value(anticipate_max_param, hand, num_players, num_round, top_card, trump_color,
                             current_position):
+    '''
+    returns the forecast amount of tricks depending on the sate of the game for a player before round is played
+    '''
     hand_value = 0
     for card in hand:
         current_value = get_card_forecast_value(
@@ -332,6 +335,9 @@ def card_rank_to_value(card, action_space):
 
 
 def get_card_anticipated_value(anticipate_max_param, card, action_space_max, action_space_min, num_players) -> float:
+    '''
+    float from 0..1 defines the weight for the forecast depending on higher or lower border
+    '''
     pos_1_one_weight = (1 / num_players)
     pos_others_weight = ((num_players - 1) / num_players)
     weighted_value = (

@@ -13,6 +13,8 @@ class WizardPlayer:
         Parameters:
             - player_id (int): The id of the player
             - np_random (numpy.random.RandomState): numpy random state
+            - hand (List): a list of cards a player has
+            -num_tricks :int for amount of tricks a player has
         '''
         self.np_random = np_random
         self.player_id: int = player_id

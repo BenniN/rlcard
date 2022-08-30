@@ -3,6 +3,7 @@ class WizardJudger:
 
     instance attributes:
         - np_random: numpy random state
+        -judge_var2 is the judger depending on if the forecast amount was reached
     '''
 
     def __init__(self, np_random):

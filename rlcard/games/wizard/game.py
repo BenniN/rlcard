@@ -31,6 +31,9 @@ class WizardGame:
         - history (list): the history of the game
         - trick_history (list): the history of the tricks
         - last_round_winner_idx (int): the last round winner
+        - game_num_rounds: round of a game
+        - top_card: the upper card of the deck, defining the roundcolor
+        - forecast_amount: the amount of a forecast
     '''
 
     game_num_rounds: int = 15

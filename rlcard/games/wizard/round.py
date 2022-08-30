@@ -9,6 +9,8 @@ class WizardRound:
 
     Instance Attributes:
         - np_random (numpy.random.RandomState): numpy random state
+        - tump_color: the trump color of the round
+        - top_card: the top_card decideing the trumpcolor
         - current_player_idx (int): index of the current player
         - starting_player_idx (int): index of the starting player
         - trick (list): the cards in the trick
