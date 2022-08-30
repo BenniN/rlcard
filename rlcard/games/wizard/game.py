@@ -1,14 +1,14 @@
 import random
 from copy import deepcopy
-import numpy as np
 from typing import Any
 
-from abc import ABC
-from rlcard.games.wizard.utils import cards2list, get_hand_forecast_value
+import numpy as np
+
 from rlcard.games.wizard import Dealer
 from rlcard.games.wizard import Judger
-from rlcard.games.wizard import Round
 from rlcard.games.wizard import Player
+from rlcard.games.wizard import Round
+from rlcard.games.wizard.utils import cards2list, get_hand_forecast_value
 
 
 class WizardGame:
@@ -111,14 +111,14 @@ class WizardGame:
         # player starts the game
         self.current_player = self.np_random.randint(0, self.num_players)
 
-        #print("currentplayer: " , self.current_player)
+        # print("currentplayer: " , self.current_player)
 
         for i in range(self.num_players):
             relative_player_pos = (i - self.current_player) % self.num_players
             self.players[i].forecast = round(
                 get_hand_forecast_value(self.anticipate_max_param, self.players[i].hand, self.num_players,
                                         self.game_num_rounds, self.top_card, self.trump_color, relative_player_pos))
-           #print('forecast_player_' + str(i) + ':', self.players[i].forecast)
+        # print('forecast_player_' + str(i) + ':', self.players[i].forecast)
 
         self.round = Round(self.np_random)
         self.round.start_new_round(
@@ -204,7 +204,7 @@ class WizardGame:
     def step_back(self) -> bool:
         if len(self.history) > 0:
             self.round, self.players, self.dealer, \
-            self.trick_amount_counter, self.trick_history, self.points, self.judge_points,\
+            self.trick_amount_counter, self.trick_history, self.points, self.judge_points, \
             self.last_round_winner_idx, self.trick_winner_card_history = self.history.pop()
             return True
         return False
