@@ -41,7 +41,7 @@ def proceed_round(numround):
     device = get_device()
 
     env_agents = []
-    env_agents.append(load_model("final_playing_models/model_round_" + str(num_rounds) + ".pth", wizardEnv, 0, device))
+    env_agents.append(load_model("rlcard/games/wizard/final_playing_models/model_round_" + str(num_rounds) + ".pth", wizardEnv, 0, device))
     env_agents.append(HumanAgent(num_actions=wizardEnv.num_actions))
     for _ in range(1, wizardEnv.num_players):
         env_agents.append(RandomAgent(num_actions=wizardEnv.num_actions))

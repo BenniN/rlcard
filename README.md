@@ -1,12 +1,12 @@
 # Repository of RL algorithm training for Cardgame Wizard via RLCARD
 
 [![Wizard implementation](https://github.com/BenniN/rlcard/tree/master/rlcard/games/wizard)]
-[![Wizard implementation](https://github.com/BenniN/rlcard/tree/master/rlcard/games/wizard)]
+[![Wizard Environment](https://github.com/BenniN/rlcard/blob/master/rlcard/envs/wizard.py)]
 
 
 ### Create Virtual Environment venv
 
-Python must be installed
+Project has to be cloned Python must be installed
 
 #### Linux
 
