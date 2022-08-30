@@ -1,4 +1,99 @@
-# RLCard: A Toolkit for Reinforcement Learning in Card Games
+# Repository of RL algorithm training for Cardgame Wizard via RLCARD
+
+[![Wizard implementation](https://github.com/BenniN/rlcard/tree/master/rlcard/games/wizard)]
+[![Wizard implementation](https://github.com/BenniN/rlcard/tree/master/rlcard/games/wizard)]
+
+
+### Create Virtual Environment venv
+
+Python must be installed
+
+#### Linux
+
+```
+bash virtualenv venv
+```
+
+#### Windows
+
+```bash
+python -m venv ./venv
+```
+
+### Activate Environment
+maybe the windows-security has problems because of used scripts:
+
+```bash
+Set-ExecutionPolicy Unrestricted -Scope Process
+```
+the activation of venv should work now only in the chosen terminal
+
+#### Windows
+
+```bash
+.\venv\Scripts\activate
+```
+
+#### Linux
+
+```bash
+source venv/Scripts/activate
+```
+
+#### MacOS
+
+```bash
+source venv/bin/activate
+```
+
+### Install Requirements
+
+```bash
+pip install -r requirements.txt
+```
+
+### Install RLCard
+
+```bash
+pip3 install -e .
+```
+
+* play against pretrained models for a whole game of Wizard
+* Model is player 0, Human player 1, Random actions Player 2
+```bash
+python .\rlcard\games\wizard\play_wizard.py
+
+```
+
+#### Freeze Requirements
+
+```bash
+pip freeze > requirements.txt
+```
+
+### Deactivate Env
+
+#### Windows
+
+```bash
+deactivate
+```
+
+#### Linux
+
+```bash
+source deactivate
+```
+
+
+
+
+
+
+
+
+
+## RLCard: A Toolkit for Reinforcement Learning in Card Games
 <img width="500" src="https://dczha.com/files/rlcard/logo.jpg" alt="Logo" />
 
 [![Testing](https://github.com/datamllab/rlcard/actions/workflows/python-package.yml/badge.svg)](https://github.com/datamllab/rlcard/actions/workflows/python-package.yml)

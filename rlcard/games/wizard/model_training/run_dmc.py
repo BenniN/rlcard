@@ -24,7 +24,7 @@ args = {
     'num_actor_devices': 5,
     'num_actors': 3,
     'training_device': 'cuda:0',
-    'log_dir': 'final_dmc_models/dmc_5e06_round20_06_3p',
+    'log_dir': 'final_dmc_models/dmc_5e06_round20_06_3ppp',
     'total_frames': 10000000,
     'exp_epsilon': 0.01,
     'batch_size': 32,
