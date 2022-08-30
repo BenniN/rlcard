@@ -30,7 +30,6 @@ class WizardDealer:
         for _ in range(num):
             player.hand.append(self.deck.pop())
 
-
     def flip_top_card(self):
         ''' Flip top card when a new game starts
 

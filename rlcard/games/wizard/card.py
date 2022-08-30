@@ -1,5 +1,4 @@
 from termcolor import colored
-import random
 
 
 def map_suit_to_color(suit) -> str:
